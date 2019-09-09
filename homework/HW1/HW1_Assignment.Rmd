@@ -1,6 +1,6 @@
 ---
 title: "STAT 385 Homework Assignment 01"
-author: ""
+author: "Andro Manukov"
 date: "Due by 12:00 PM 09/14/2019"
 output: html_document
 ---
@@ -39,33 +39,72 @@ Below you will find problems for you to complete as an individual. It is fine to
 ### 1. With the `data(pressure)` dataset in R, do the following:
 
 a. run the command that shows the help page of the median function
-
+```{r}
+help(median)
+```
 b. show the first 10 rows and 2 columns of the `data(pressure)` dataset
+```{r}
+head(pressure, n = 10)
+```
 
 c. run the command `head(pressure)`
+```{r}
+head(pressure)
+```
 
 d. describe the differences between parts **b** and **c**.
 
+head(pressure) without the n = 10 attribute displays the first 6 rows of pressure while head(pressure, n = 10) displays the first 10 rows of pressure.
 ### 2. With the `data(cars)` dataset in R, compute the following:
 
 a. the median of the stopping distance
+```{r}
+median(cars$dist)
+```
 
 b. the mean of the speed
+```{r}
+mean(cars$speed)
+```
 
 c. the six number summary of both the mean and speed
+```{r}
+summary(cars)
+```
 
 d. the plot of the stopping distance (vertical axis) versus the speed (horizontal axis) making sure the axes are written exactly as "distance" and "speed", while the title as "Speed and Stopping Distances of Cars".
+```{r}
+plot(cars, main = "Speed and Stopping Distances of Cars", xlab = "speed", ylab = "distance")
+```
+
 
 ### 3. With the `data(iris)` dataset in R, do the following calculations:
 
 a. the sum of the 25th and 26th versicolor iris's sepal lengths divided by 2
+```{r}
+sum((iris$Sepal.Length[25] + iris$Sepal.Length[26]) / 2 )
+```
 
 b. the sum of all petal lengths among all species of iris that are between 0 cm and 3 cm
+```{r}
+less_than_3 = subset(iris, iris$Petal.Length <= 3)
+sum(less_than_3$Petal.Length)
+```
+
 
 c. assuming `x` equals the sepal length of the 10th virginica iris, then $4\cdot x/2^3$
+```{r}
+all_virginica = subset(iris, iris$Species == "virginica")
+x = all_virginica$Sepal.Length[10]
+print(4 * x / 2 ^ 3)
+```
 
 d. assuming `x` equals the sum of all setosa sepal widths, then $4\cdot(x/2)^3$.
-
+```{r}
+all_setosa = subset(iris, iris$Species == "setosa")
+x = sum(all_virginica$Sepal.Width)
+print(4 * (x / 2) ^ 3)
+```
 
 ### 4. Using the Instructor Notes from Week 03, address the following:
 
@@ -80,9 +119,12 @@ d. Why is it important to set the random seed at the beginning of a simulation?
 ### 5. Incorporate images that address the following:
 
 a. a screenshot that shows your personal repo in GitHub Enterprise
-
+![](\Users\andre\Pictures\temp.png)
 b. a screenshot of the Git terminal (or shell) open within RStudio
+![](\Users\andre\Pictures\temp2.png)
 
 c. a screenshot of RStudio with the 4 panes basic such that there's a Git tab in the top right pane, and the files in the repo in the bottom right pane
+![](\Users\andre\Pictures\temp3.png)
 
 d. the push/pull pop up window of RStudio with the final commit message of your homework submission.
+![](\Users\andre\Pictures\temp4.png)
