@@ -109,13 +109,27 @@ print(4 * (x / 2) ^ 3)
 ### 4. Using the Instructor Notes from Week 03, address the following:
 
 a. run the code that appears in slide 20 of the intro_slides.pdf slide deck.
+```{r}
+set.seed(13)
+x <- rnorm(n = 20)
+y <- rnorm(n = 20, mean = x)
+plot(y ~ x, pch = 19)
+```
 
 b. change the seed number in the `set.seed()` command from 13 to 14. Then, re-run the code in part **a**.
-
+```{r}
+set.seed(14)
+x <- rnorm(n = 20)
+y <- rnorm(n = 20, mean = x)
+plot(y ~ x, pch = 19)
+```
 c. Is there a difference between the results of parts **a** and **b**? If so, describe some of the obvious differences.
+
+Yes, there are no values in set.seed(14) that reach -1, unlike the set.seed(13) plot
 
 d. Why is it important to set the random seed at the beginning of a simulation?
 
+Its important because we want to be able to replicate "random" results if needed
 ### 5. Incorporate images that address the following:
 
 a. a screenshot that shows your personal repo in GitHub Enterprise
@@ -125,6 +139,9 @@ b. a screenshot of the Git terminal (or shell) open within RStudio
 
 c. a screenshot of RStudio with the 4 panes basic such that there's a Git tab in the top right pane, and the files in the repo in the bottom right pane
 ![](\Users\andre\Pictures\temp3.png)
+<<<<<<< HEAD
 
+=======
+>>>>>>> f86cddd3cb94ba1d4318827a92f73526500356ed
 d. the push/pull pop up window of RStudio with the final commit message of your homework submission.
 ![](\Users\andre\Pictures\temp4.png)
