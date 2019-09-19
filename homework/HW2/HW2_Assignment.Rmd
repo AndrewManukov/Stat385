@@ -1,6 +1,6 @@
 ---
 title: "STAT 385 Homework Assignment 02"
-author: ""
+author: "Andro Manukov"
 date: "Due by 12:00 PM 09/28/2019"
 output: html_document
 ---
@@ -15,15 +15,25 @@ a. create two vectors labelled `x` and `y`, each with 500 elements.  You can do 
 ```{r}
 x = c(rep(1, each = 500))
 y = c(rep(0, each = 500))
+mat <- cbind(x,y)
+head(mat)
 ```
 
 b. run the command `z <- rep(c(1,3), each = 250)`.  Combine `mat` and `z`.  Convert the matrix `mat` with columns `x`, `y`, and `z` into a data frame called `dat`. 
 ```{r}
 z <- rep(c(1,3), each = 250)
+dat <- cbind.data.frame(mat, z)
+dat
 ```
 
 
 c. reassign `z` as a factor variable within the data frame `dat`.  Run the command `str(dat)`.  You should see something like:
+
+```{r}
+dat$z = as.factor(dat$z)
+str(dat)
+```
+
 
     'data.frame':	500 obs. of  3 variables:<br>
     $ x: num  1.4176 1.25 -1.4528 -0.3946 0.0264 ...<br>
@@ -40,7 +50,14 @@ d. run the following commands:
 
 Carefully describe why the first line returned a warning message and both the second and third lines      did not.  Which of the three lines properly added 2 to the levels of the factor variable `z`? Why?
 
+1) since z has been converted to factor, it uses string values. you cannot add an integer to a string in R.
+
+2)2 + as.numeric(levels(dat$z)[dat$z]) is the proper way to add 2 levels to the factor variable 'z' because ???????????????????????
+
 e. remove the rows of `dat` corresponding to lowest 100 values of `x`.
+```{r}
+
+```
 
 ### 2. With the `dat` dataset in problem 1, do the following:
 
