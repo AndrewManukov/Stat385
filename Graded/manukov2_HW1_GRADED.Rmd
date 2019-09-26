@@ -1,0 +1,191 @@
+---
+title: "STAT 385 Homework Assignment 01"
+author: "Andro Manukov"
+date: "Due by 12:00 PM 09/14/2019"
+output: html_document
+---
+
+```{css echo=FALSE}
+.tacomments {
+  background-color: #00CFFF;
+}
+```
+
+```{remark class.source="tacomments"}
+Overall: 91%
+
+Efficiency[2pts]: 2.5
+Correctness[4pts]: 2.0
+Documentation[1pts]: 2.5
+Beauty[2pts]: 2.5
+
+See comments below for feedback.
+```
+
+## R Markdown Introduction
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is an R Markdown document. The code chunk `knitr::opts_chunk$set(echo = TRUE)` is used to setup the document and how it processes these chunks below. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You need to label your code chunks, and these labels must be unique. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+The label was *cars* and was written in the curly braces after `r`. You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+***
+
+***
+
+## The Homework Problems
+
+Below you will find problems for you to complete as an individual. It is fine to discuss the homework problems with classmates, but cheating is prohibited and will be harshly penalized if detected.
+
+
+### 1. With the `data(pressure)` dataset in R, do the following:
+
+a. run the command that shows the help page of the median function
+```{r}
+help(median)
+```
+b. show the first 10 rows and 2 columns of the `data(pressure)` dataset
+```{r}
+head(pressure, n = 10)
+```
+
+```{remark class.source="tacomments"}
+[Misc] Goal here was to use pressure[1:10, 1:2]
+```
+
+c. run the command `head(pressure)`
+```{r}
+head(pressure)
+```
+
+d. describe the differences between parts **b** and **c**.
+
+head(pressure) without the n = 10 attribute displays the first 6 rows of pressure while head(pressure, n = 10) displays the first 10 rows of pressure.
+### 2. With the `data(cars)` dataset in R, compute the following:
+
+a. the median of the stopping distance
+```{r}
+median(cars$dist)
+```
+
+b. the mean of the speed
+```{r}
+mean(cars$speed)
+```
+
+c. the six number summary of both the mean and speed
+```{r}
+summary(cars)
+```
+
+d. the plot of the stopping distance (vertical axis) versus the speed (horizontal axis) making sure the axes are written exactly as "distance" and "speed", while the title as "Speed and Stopping Distances of Cars".
+```{r}
+plot(cars, main = "Speed and Stopping Distances of Cars", xlab = "speed", ylab = "distance")
+```
+
+
+### 3. With the `data(iris)` dataset in R, do the following calculations:
+
+a. the sum of the 25th and 26th versicolor iris's sepal lengths divided by 2
+```{r}
+sum((iris$Sepal.Length[25] + iris$Sepal.Length[26]) / 2 )
+```
+
+```{remark class.source="tacomments"}
+[Correctness] You found the ith element across all species. You were supposed find the ith element in one specific species only.
+
+[Beauty] iris[25, "Sepal.Length"] is more readable vs iris$Sepal.Length[25]
+```
+
+b. the sum of all petal lengths among all species of iris that are between 0 cm and 3 cm
+```{r}
+less_than_3 = subset(iris, iris$Petal.Length <= 3)
+sum(less_than_3$Petal.Length)
+```
+
+```{remark class.source="tacomments"}
+[Misc] For technical reasons use of accessors (i.e. brackets []) is preferred over the subset function
+```
+
+
+c. assuming `x` equals the sepal length of the 10th virginica iris, then $4\cdot x/2^3$
+```{r}
+all_virginica = subset(iris, iris$Species == "virginica")
+x = all_virginica$Sepal.Length[10]
+print(4 * x / 2 ^ 3)
+```
+
+d. assuming `x` equals the sum of all setosa sepal widths, then $4\cdot(x/2)^3$.
+```{r}
+all_setosa = subset(iris, iris$Species == "setosa")
+x = sum(all_virginica$Sepal.Width)
+print(4 * (x / 2) ^ 3)
+```
+
+```{remark class.source="tacomments"}
+[Correctness] Accidentally used all_virginica instead of all_setosa
+```
+
+### 4. Using the Instructor Notes from Week 03, address the following:
+
+a. run the code that appears in slide 20 of the intro_slides.pdf slide deck.
+```{r}
+set.seed(13)
+x <- rnorm(n = 20)
+y <- rnorm(n = 20, mean = x)
+plot(y ~ x, pch = 19)
+```
+
+b. change the seed number in the `set.seed()` command from 13 to 14. Then, re-run the code in part **a**.
+```{r}
+set.seed(14)
+x <- rnorm(n = 20)
+y <- rnorm(n = 20, mean = x)
+plot(y ~ x, pch = 19)
+```
+c. Is there a difference between the results of parts **a** and **b**? If so, describe some of the obvious differences.
+
+Yes, there are no values in set.seed(14) that reach -1, unlike the set.seed(13) plot
+
+```{remark class.source="tacomments"}
+[Correctness] Does not describe any differences.
+```
+
+d. Why is it important to set the random seed at the beginning of a simulation?
+
+Its important because we want to be able to replicate "random" results if needed
+
+### 5. Incorporate images that address the following:
+
+a. a screenshot that shows your personal repo in GitHub Enterprise
+<!-- ![](\Users\andre\Pictures\temp.png) -->
+b. a screenshot of the Git terminal (or shell) open within RStudio
+<!-- ![](\Users\andre\Pictures\temp2.png) -->
+
+c. a screenshot of RStudio with the 4 panes basic such that there's a Git tab in the top right pane, and the files in the repo in the bottom right pane
+<!-- ![](\Users\andre\Pictures\temp3.png) -->
+<<<<<<< HEAD
+
+```{remark class.source="tacomments"}
+[Correctness] Not correct screenshot. Does not show file panes. Supposed to show the four quadrants (panes) not a set of tabs.
+```
+
+=======
+>>>>>>> f86cddd3cb94ba1d4318827a92f73526500356ed
+d. the push/pull pop up window of RStudio with the final commit message of your homework submission.
+<!-- ![](\Users\andre\Pictures\temp4.png) -->
