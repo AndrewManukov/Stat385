@@ -1,9 +1,11 @@
 ---
 title: "STAT 385 Homework Assignment 02"
-author: ""
+author: "Andro Manukov"
 date: "Due by 12:00 PM 09/28/2019"
 output: html_document
 ---
+
+## NOTE: I've had a lot on my plate these past few weeks and I put off this HW. This will be my one dropped HW. Sorry.
 
 ## The Homework Problems
 
