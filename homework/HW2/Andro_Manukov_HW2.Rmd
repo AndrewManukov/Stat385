@@ -5,6 +5,8 @@ date: "Due by 12:00 PM 09/28/2019"
 output: html_document
 ---
 
+## NOTE: I've had a lot on my plate these past few weeks and I put off this HW. This will be my one dropped HW. Sorry.
+
 ## The Homework Problems
 
 Below you will find problems for you to complete as an individual. It is fine to discuss the homework problems with classmates, but cheating is prohibited and will be harshly penalized if detected.
