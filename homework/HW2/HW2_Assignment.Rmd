@@ -13,8 +13,8 @@ Below you will find problems for you to complete as an individual. It is fine to
 
 a. create two vectors labelled `x` and `y`, each with 500 elements.  You can do this any way you like.  Combine these vectors into a matrix called `mat`.  Run the command `head(mat)`.
 ```{r}
-x = c(rep(1, each = 500))
-y = c(rep(0, each = 500))
+x = c(rnorm(500, 1, 3))
+y = c(rnorm(500, 2, 3))
 mat <- cbind(x,y)
 head(mat)
 ```
@@ -56,7 +56,7 @@ Carefully describe why the first line returned a warning message and both the se
 
 e. remove the rows of `dat` corresponding to lowest 100 values of `x`.
 ```{r}
-
+sort(dat)
 ```
 
 ### 2. With the `dat` dataset in problem 1, do the following:
@@ -79,8 +79,16 @@ b.  The fourth line of the code in part a generates `y` as a linear function of 
 ### 3. Using functions, lists, matrices and vectors, complete the following:
 
 a. place the first 5 letters of the alphabet into a list
+```{r}
+first_five = list(letters[1:5])
+first_five
+```
 
 b. place a random set of 2 integers as a new component of the list made in part **a**  
+```{r}
+ints = list(rnorm(2))
+append(firt_five, 
+```
 
 c. create a matrix with two columns such that column 1 contains the 5 letters repeating, column 2 contains the 2 integers repeating, and column 3 that shows all possible pairs of the elements of the first 2 columns  
 
@@ -90,6 +98,9 @@ d. add a 4th column to the matrix from part **c** that is a randomized ordering 
 ### 4. Use the CCSO Bookings Data to accomplish the following:
 
 a. read in the data using R's default method for comma separated files and show the data dimension
+```{r}
+df = read.csv("CSCO Data.csv")
+```
 
 b. show only the 2012 bookings for people ages 17-23 years old not residing in Illinois and show the data dimension
 
