@@ -188,26 +188,27 @@ WPP2010 <- WPP2010[, c(3, 6, 11, 12)]
 countries <- c("Canada", "Mexico", "United States of America")
 
 # obtain population data for all countries for all years
-dataset <- WPP2010[WPP2010[, 1] %in% countries, ] #obtain pop for restrited 
+dataset <- WPP2010[WPP2010[, 1] %in% countries, ] #obtain pop for countries we want 
 dataset[, 3] <- as.numeric(levels(dataset[, 3]))[dataset[, 3]]
 dataset[, 4] <- as.numeric(levels(dataset[, 4]))[dataset[, 4]]
-dataset[, 3:4] <- dataset[, 3:4] / 1000 #divid by 1000 for clarity
+dataset[, 3:4] <- dataset[, 3:4] / 1000 #divide by 1000 for clarity
 
 # get population dataset for this analysis corresponding to the 
 # Census years 
 dataset.years <- dataset[dataset[, 2] %in% 
   c("1960", "1970", "1980", "1990", "2000", "2010"), ]
-dataset.years[, 2] <- factor(dataset.years[, 2])
-dataset.years.list <- split(dataset.years, f = as.factor(dataset.years[, 2]))
+dataset.years[, 2] <- factor(dataset.years[, 2]) #change second col to factor
+dataset.years.list <- split(dataset.years, f = as.factor(dataset.years[, 2])) #splits years
 pops <- unlist(lapply(dataset.years.list, function(x) sum(x[, 3:4]))) #simplify dataset into a vector 
 ```
 
 b. The code in part **a** is partially commented.  Add comments to all remaining lines of code to make the script clear.
 
 
-c. Determine the proportion of mainland North American males aged 20-29 that lived in 1970 or before.
+c. Determine the proportion of mainland North American males aged 20-29 that lived in 1970 or before. 
 
 ```{r}
+
 proportion = length(as.numeric(dataset$year) < "1970") / length(as.numeric(dataset$year))
 proportion
 #FIX
@@ -239,11 +240,25 @@ filter(CSCO_Bookings, RACE == "Asian/Pacific Islander")
 
 d. repeat parts a-c using only pipe operators
 
-a. 
+a.
+
+```{r}
+library(dplyr)
+CSCO_Bookings %>% filter(BOOKING.DATE >= "1/1/2012" & BOOKING.DATE <= "12/31/2012" & STATE != "ILLINOIS" & Age.at.Arrest > "16" & Age.at.Arrest < "24")
+```
+
+b
+```{r}
+
+CSCO_Bookings %>% filter( BOOKING.DATE > "12/31/2012" & CITY == "DANVILLE" & EMPLOYMENT.STATUS == "Student")
+```
+
+c
+
 ```{r}
 #filter(CSCO_Bookings, BOOKING.DATE >= "1/1/2012" & BOOKING.DATE <= "12/31/2012" & STATE != #"ILLINOIS" & Age.at.Arrest > "16" & Age.at.Arrest < "24")
 
-CSCO_Bookings %>% select(BOOKING.DATE )
+CSCO_Bookings %>% filter(RACE == "Asian/Pacific Islander")
 ```
 
 ## Select in-class tasks
