@@ -188,10 +188,10 @@ WPP2010 <- WPP2010[, c(3, 6, 11, 12)]
 countries <- c("Canada", "Mexico", "United States of America")
 
 # obtain population data for all countries for all years
-dataset <- WPP2010[WPP2010[, 1] %in% countries, ] #obtain pop for restrited 
+dataset <- WPP2010[WPP2010[, 1] %in% countries, ] #obtain pop for countries we want 
 dataset[, 3] <- as.numeric(levels(dataset[, 3]))[dataset[, 3]]
 dataset[, 4] <- as.numeric(levels(dataset[, 4]))[dataset[, 4]]
-dataset[, 3:4] <- dataset[, 3:4] / 1000 #divid by 1000 for clarity
+dataset[, 3:4] <- dataset[, 3:4] / 1000 #divide by 1000 for clarity
 
 # get population dataset for this analysis corresponding to the 
 # Census years 
