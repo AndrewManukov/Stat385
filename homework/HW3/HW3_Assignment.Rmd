@@ -41,7 +41,7 @@ converter <- function(amount, units) #declaring function, accepts how much of wh
     paste(original, units, "is", amount, "milliliters")
     }
   else if (units == "liters")
-  {
+  { 
     original = amount
     amount = amount * 0.879877
     paste(original, units, "is", amount, "imperial quarts")
