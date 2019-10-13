@@ -128,9 +128,9 @@ a. load in the dataset [dataHW3.csv](https://uofi.box.com/shared/static/mwntzgp2
 
 b. call the first column of this dataset x. Compute the statistic `(mean(x) - 10)/se(x)` where `se` is shorthand for standard error (see the previous problem for the definition of standard error).  
 ```{r}
-colnames(df)[colnames(df) == "unknown1"] <- "x"
-se <- function(x) sd(x) / sqrt(length((x)))
-statisticX = (mean(df$x) - 10) / se(df$x)
+colnames(df)[colnames(df) == "unknown1"] <- "x" #renaming first col to x
+se <- function(x) sd(x) / sqrt(length((x))) #creating SE function
+statisticX = (mean(df$x) - 10) / se(df$x) 
 statisticX
 ```
 
@@ -157,20 +157,20 @@ a. make sure you have the dataset [WPP2010.csv](https://uofi.box.com/shared/stat
 ```{r, eval = FALSE}
 # load in UN dataset and remove irrelevant variables
 options(warn=-1)
-WPP2010 <- read.csv("WPP2010.csv", header = TRUE)
-colnames(WPP2010)[3] <- c("region")
-colnames(WPP2010)[6] <- c("year")
-colnames(WPP2010)[7:17] <- paste("age", 0:10 * 5, sep = "")
+WPP2010 <- read.csv("WPP2010.csv", header = TRUE) #read in dataset
+colnames(WPP2010)[3] <- c("region") #rename 3rd column to region 
+colnames(WPP2010)[6] <- c("year") #rename 6th column to year
+colnames(WPP2010)[7:17] <- paste("age", 0:10 * 5, sep = "") #rename 7th:17th columns to age
 WPP2010 <- WPP2010[, c(3, 6, 11, 12)]
 
 # restrict attention to countries of interest
 countries <- c("Canada", "Mexico", "United States of America")
 
 # obtain population data for all countries for all years
-dataset <- WPP2010[WPP2010[, 1] %in% countries, ]
+dataset <- WPP2010[WPP2010[, 1] %in% countries, ] #obtain pop for restrited 
 dataset[, 3] <- as.numeric(levels(dataset[, 3]))[dataset[, 3]]
 dataset[, 4] <- as.numeric(levels(dataset[, 4]))[dataset[, 4]]
-dataset[, 3:4] <- dataset[, 3:4] / 1000
+dataset[, 3:4] <- dataset[, 3:4] / 1000 #divid by 1000 for clarity
 
 # get population dataset for this analysis corresponding to the 
 # Census years 
@@ -178,7 +178,7 @@ dataset.years <- dataset[dataset[, 2] %in%
   c("1960", "1970", "1980", "1990", "2000", "2010"), ]
 dataset.years[, 2] <- factor(dataset.years[, 2])
 dataset.years.list <- split(dataset.years, f = as.factor(dataset.years[, 2]))
-pops <- unlist(lapply(dataset.years.list, function(x) sum(x[, 3:4])))
+pops <- unlist(lapply(dataset.years.list, function(x) sum(x[, 3:4]))) #simplify dataset into a vector 
 ```
 
 b. The code in part **a** is partially commented.  Add comments to all remaining lines of code to make the script clear.
@@ -187,7 +187,9 @@ b. The code in part **a** is partially commented.  Add comments to all remaining
 c. Determine the proportion of mainland North American males aged 20-29 that lived in 1970 or before.
 
 ```{r}
-
+proportion = length(which(as.numeric(dataset$year) < 1970))
+proportion
+#FIX
 ```
 
 
@@ -215,30 +217,61 @@ filter(CSCO_Bookings, RACE == "Asian/Pacific Islander")
 
 d. repeat parts a-c using only pipe operators
 
+a. 
+```{r}
+filter(CSCO_Bookings, BOOKING.DATE >= "1/1/2012" & BOOKING.DATE <= "12/31/2012" & STATE != "ILLINOIS" & Age.at.Arrest > "16" & Age.at.Arrest < "24")
+```
 
 ## Select in-class tasks
 
 Completion of select in-class tasks will be worth 1 point and will be graded largely by completion. Obvious errors and incomplete work will recieve deductions. Problems 3-5 are directly copied from your notes. Problems 1-2 are copied from the notes with minor alterations. In these problems I ask that you display the first 5 rows of the dataset instead of the entire dataset.
 
 1. Load in the CCSO dataset, discover 3 factor (or categorical) variables and 3 numeric variables. Show the first 5 rows of this dataset with only those 6 variables. 
+```{r}
+library(tidyverse)
+CSCO_Bookings
+#Factor: Employment.Status  Prisoner.Type  Maritial.Status
+#Numerical: BOOKING.TIME Age.at.Arrest Days.in.Jail
+
+head(CSCO_Bookings, n = 5) %>% select(EMPLOYMENT, PRISONER.TYPE, MARITIAL.STATUS, BOOKING.TIME, Age.at.Arrest, Days.in.Jail)
+```
 
 2. Rename one of the factor variables to a name that is either easier to understand than the original variable name. Show the first 5 rows of the dataset with all variables such that the variable with the new name is the first column in the dataset.
+```{r}
+df2(CSCO_Bookings)[colnames(CSCO_Bookings)=="EMPLOYMENT.STATUS"] <- "EMPLOYMENT"
+head(CSCO_Bookings, n = 5)
+#didnt actually run this bc i feel like itll mess up other code 
+```
+
 
 3. Write 3 separate loops: a for loop, while loop, and repeat loop that give the same result. The result should be the cumulative sum of Days in jail among Black people whose Arrest Ages 18-24 with Student as Employment status within the CCSO Bookings Data.
+```{r}
+
+```
+
 
 4. Here are some images of R code. Read the code, debug it if necessary, and judge it on its efficiency and correctness. Decide on which set of code is better and improve the better one.
 
 a.
 
 ![](https://uofi.box.com/shared/static/2x1h70d5skqpxwke8ftw7xx1rwu41397.jpg)
+```{r}
+#right code is better. i dont even know how you come up with the code on the left. 
+```
 
 b.
 
 ![](https://uofi.box.com/shared/static/xn2lop472prp18720uevoj4dpyfmtxwq.jpg)
+```{r}
+#code on the left seems better but actually the code on the right is much better because it is clear on what is going on. right would be better if it were commented
+```
 
 c.
 
 ![](https://uofi.box.com/shared/static/zsr6nmyayso7emjkmk6cfwaxs75wujpj.jpg)
+```{r}
+#right is much better. it is much more concise.
+```
 
 5. Using the vector y below
 ```{r nt5}
@@ -247,14 +280,45 @@ y <- rnorm(100)
 ```
 
   a. Use the which.min and which.max functions to dispay the index corresponding to the minimum and maximum elelments of `y`.
+```{r}
+which.min(y)
+```
+```{r}
+which.max(y)
+```
+
   
   b. Do the which.min and which.max functions work? (try: max(y) == y[which.max(y)]).
+```{r}
+max(y) == y[which.max(y)]
+```
+Yes
   
   c. Use the which function and the length function to report the proportion of the elements of `y` that are greater than 0.
+```{r}
+length(which(y > 0)) / length(y)
+```
+  
 
   d. Discuss why the proportion in **part c** is close to 0.5. Hint: What is the mean of the normal distribution that generated the elements in `y`?
+```{r}
+mean(y)
+sd(y)
+```
+
+the mean of y is pretty close to the mean of the normal distribution. same with the SD. 
   
   e. Create a factor variable with 50 values of `A` and 50 values of `B`, and name this factor variable `trt`. 
+```{r}
+fac = rep(c("A","B"), times = 50)
+trt= factor(fac)
+
+```
   
   f. Create a data frame consisting of `x` and `trt`.
+```{r}
+df = data.frame(y, trt)
+df
+```
+  
   
