@@ -208,10 +208,9 @@ b. The code in part **a** is partially commented.  Add comments to all remaining
 c. Determine the proportion of mainland North American males aged 20-29 that lived in 1970 or before. 
 
 ```{r}
+#idk man 
+length(as.numeric(dataset$year) <= "1970") / length(dataset$year) 
 
-proportion = length(as.numeric(dataset$year) < "1970") / length(as.numeric(dataset$year))
-proportion
-#FIX
 ```
 
 
@@ -285,8 +284,37 @@ head(CSCO_Bookings, n = 5)
 
 3. Write 3 separate loops: a for loop, while loop, and repeat loop that give the same result. The result should be the cumulative sum of Days in jail among Black people whose Arrest Ages 18-24 with Student as Employment status within the CCSO Bookings Data.
 ```{r}
-for (val in CSCO_Bookings)
+black = filter(CSCO_Bookings, Age.at.Arrest >= 18 & Age.at.Arrest <= 24 & RACE == "Black" & EMPLOYMENT.STATUS == "Student")
+sum = 0
+for (i in black)
+{
+  sum = sum + black$Days.in.Jail
+}
+sum
 ```
+
+```{r}
+flag = TRUE
+sum = 0
+while(!flag)
+{
+  sum = sum + black$Days.in.Jail
+  flag = TRUE 
+}
+sum
+```
+
+```{r}
+sum = 0
+repeat
+{
+  sum = sum + black$Days.in.Jail
+  #break when reached end
+  break;
+}
+sum
+```
+
 
 
 4. Here are some images of R code. Read the code, debug it if necessary, and judge it on its efficiency and correctness. Decide on which set of code is better and improve the better one.
