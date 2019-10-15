@@ -101,14 +101,35 @@ d. add a 4th column to the matrix from part **c** that is a randomized ordering 
 
 a. read in the data using R's default method for comma separated files and show the data dimension
 ```{r}
-df = read.csv("CSCO Data.csv")
+df <- read.csv("https://uofi.box.com/shared/static/9elozjsg99bgcb7gb546wlfr3r2gc9b7.csv", stringsAsFactors = FALSE)
 ```
 
+```{r}
+dim(df)
+```
+
+
 b. show only the 2012 bookings for people ages 17-23 years old not residing in Illinois and show the data dimension
+```{r}
+df1 = subset(df, df$BOOKING.DATE >= "1/1/2012" & df$BOOKING.DATE < "1/1/2013" & df$Age.at.Arrest >= 17 & df$Age.at.Arrest <= 23 & df$STATE != "Illinois")
+df1
+dim(df1)
+```
 
 c. show only the bookings for people who have employment status as "student" booked after the year 2012 residing in Danville and show the data dimension
+```{r}
+df2 = subset(df, df$BOOKING.DATE >= "1/1/2012" & df$EMPLOYMENT.STATUS == "Student" & df$CITY == "DANVILLE")
+df2
+dim(df2)
+```
 
 d. show only the bookings for Asian people residing in the cities of Champaign or Urbana and show the data dimension
+```{r}
+df3 =  subset(df, df$RACE == "Asian/Pacific Islander")
+df3
+dim(df3)
+
+```
 
 
 ### 5. Use the CCSO Bookings Data to accomplish the following:
