@@ -124,7 +124,11 @@ dim(df2)
 
 d. show only the bookings for Asian people residing in the cities of Champaign or Urbana and show the data dimension
 ```{r}
+<<<<<<< HEAD
 df3 =  subset(df, df$RACE == "Asian/Pacific Islander" & (df$CITY == "CHAMPAIGN" | df$CITY == "URBANA"))
+=======
+df3 =  subset(df, df$RACE == "Asian/Pacific Islander")
+>>>>>>> 214bbf2ef83a8ae11a3ab84dd6081c6d111d8023
 df3
 dim(df3)
 
