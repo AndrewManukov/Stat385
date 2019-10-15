@@ -58,7 +58,6 @@ Carefully describe why the first line returned a warning message and both the se
 
 e. remove the rows of `dat` corresponding to lowest 100 values of `x`.
 ```{r}
-sort(dat)
 ```
 
 ### 2. With the `dat` dataset in problem 1, do the following:
@@ -88,8 +87,8 @@ first_five
 
 b. place a random set of 2 integers as a new component of the list made in part **a**  
 ```{r}
-ints = list(rnorm(2))
-append(firt_five, 
+#ints = list(rnorm(2))
+#append(firt_five, 
 ```
 
 c. create a matrix with two columns such that column 1 contains the 5 letters repeating, column 2 contains the 2 integers repeating, and column 3 that shows all possible pairs of the elements of the first 2 columns  
@@ -101,23 +100,61 @@ d. add a 4th column to the matrix from part **c** that is a randomized ordering 
 
 a. read in the data using R's default method for comma separated files and show the data dimension
 ```{r}
-df = read.csv("CSCO Data.csv")
+df <- read.csv("https://uofi.box.com/shared/static/9elozjsg99bgcb7gb546wlfr3r2gc9b7.csv", stringsAsFactors = FALSE)
 ```
 
+```{r}
+dim(df)
+```
+
+
 b. show only the 2012 bookings for people ages 17-23 years old not residing in Illinois and show the data dimension
+```{r}
+df1 = subset(df, df$BOOKING.DATE >= "1/1/2012" & df$BOOKING.DATE < "1/1/2013" & df$Age.at.Arrest >= 17 & df$Age.at.Arrest <= 23 & df$STATE != "Illinois")
+df1
+dim(df1)
+```
 
 c. show only the bookings for people who have employment status as "student" booked after the year 2012 residing in Danville and show the data dimension
+```{r}
+df2 = subset(df, df$BOOKING.DATE >= "1/1/2012" & df$EMPLOYMENT.STATUS == "Student" & df$CITY == "DANVILLE")
+df2
+dim(df2)
+```
 
 d. show only the bookings for Asian people residing in the cities of Champaign or Urbana and show the data dimension
+```{r}
+df3 =  subset(df, df$RACE == "Asian/Pacific Islander" & (df$CITY == "CHAMPAIGN" | df$CITY == "URBANA"))
+df3
+dim(df3)
+
+```
 
 
 ### 5. Use the CCSO Bookings Data to accomplish the following:
 
 a. read in the data using the **data.table** package and show the data dimension
+```{r}
+library(data.table)
+dfTable = fread("https://uofi.box.com/shared/static/9elozjsg99bgcb7gb546wlfr3r2gc9b7.csv")
+dim(dfTable)
+```
 
 b. show only the 2012 bookings for people ages 17-23 years old not residing in Illinois and show the data dimension
+```{r}
+dfTable[which(`BOOKING DATE` >= "1/1/2012" & `BOOKING DATE` < "1/1/2013" & `Age at Arrest` >= 17 & `Age at Arrest` <= 23 & `STATE` != "Illinois")]
+dim(dfTable[which(`BOOKING DATE` >= "1/1/2012" & `BOOKING DATE` < "1/1/2013" & `Age at Arrest` >= 17 & `Age at Arrest` <= 23 & `STATE` != "Illinois")])
+```
 
 c. show only the bookings for people who have employment status as "student" booked after the year 2012 residing in Danville and show the data dimension
+```{r}
+dfTable[which(`BOOKING DATE` >= "1/1/2012" & `EMPLOYMENT STATUS` == "Student" & `CITY` == "DANVILLE")]
+dim(dfTable[which(`BOOKING DATE` >= "1/1/2012" & `EMPLOYMENT STATUS` == "Student" & `CITY` == "DANVILLE")])
+```
 
 d. show only the bookings for Asian people residing in the cities of Champaign or Urbana and show the data dimension
+```{r}
+dfTable[which(`RACE` == "Asian/Pacific Islander" & (`CITY` == "URBANA" | `CITY` == "CHAMPAIGN"))]
+dim(dfTable[which(`RACE` == "Asian/Pacific Islander" & (`CITY` == "URBANA" | `CITY` == "CHAMPAIGN"))])
+```
 
