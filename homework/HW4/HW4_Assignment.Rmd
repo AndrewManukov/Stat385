@@ -1,0 +1,92 @@
+---
+title: "STAT 385 HW4"
+author: "Andro Manukov"
+date: "Due by 12:00 PM on 10/26/2019"
+output: html_document
+---
+
+
+## HW 4 Problems
+
+Below you will find problems for you to complete as an individual. It is fine to discuss the homework problems with classmates, but cheating is prohibited and will be harshly penalized if detected.
+
+### 1. Modify the scaler function in the Week 7 notes.
+
+We created a function called `scalar` in the Week 7 Notes. This function takes a numeric or integer vector as an input (check this on your own) and it outputs the scaled numeric or integer vectors as an output. Make a new version of this function that 1) takes a dataframe as an argument 2) scales all of the numeric and integer-valued columns of that dataframe while leaving all other variables alone 3) returns the original dataframe with scaled numeric and integer-valued columns. Verify that your function is working by testing it on two dataframes. The first dataframe can be anything that you want. The second dataframe should consist of only factor variables, i.e. the function should do nothing to this dataframe and also should not output an error message. Your verification checks should be readable, do not simply report the returned dataframes.
+
+
+### 2. Using the Chicago Food Inspections Data, do the following:
+```{r}
+food <- read.csv("https://uofi.box.com/shared/static/5637axblfhajotail80yw7j2s4r27hxd.csv")
+food
+```
+
+
+a. create a visualization (plot) of at least two variables using this dataset
+```{r}
+plot(food$Latitude, food$Longitude)
+points(x = 41.88, y = -87.61, pch = 19, col = "blue") #Aqua Tower
+```
+
+b. explain what is good and what is bad about the visualization
+Bad: No titles, hard to tell whats going on. 
+Good: Blue colored point helps Aqua Tower stand out. 
+
+c. show a substantially improved visualization
+```{r}
+food$Color= "grey"
+food$Color[food$Results == "Pass"] = "chartreuse2"
+food$Color[food$Results == "Fail"] = "darkgray"
+plot(food$Latitude, food$Longitude, xlab = "Latitude", ylab = "Longitude", main = "Passing Food Areas in Relation to Aqua Tower", col = food$Color, ylim = c(-87.7, -87.55), xlim = c(41.8, 41.95))
+points(x = 41.88, y = -87.61, pch = 19, col = "blue", cex = 1.5) #Aqua Tower
+```
+d. describe the improvement and why the improved plot in part **c** helps the reader/viewer more than the original plot in part **a**.
+-Color coded observations based on if they passed the inspection. 
+-Made the Aqua Tower point a little bigger
+-Zoomed in on the plot to better fill the needs of someone living in Aqua Tower 
+These 3 improvements give the plot some meaning. The first plot was just a plot of all the eating areas along with a blue point signifying Aqua Tower. This new plot gives someone living near Aqua Tower the knowledge of whether the places near them are able to pass inspections.  
+
+### 3. Using the Chicago Food Inspections Data, do the following:
+
+a. create a table of descriptive statistics of your choice
+
+b. add one descriptive statistic to the plot in part **1c**
+
+c. write a brief explanatory narrative of the visualization in part **2b**. In your explanation, be convincing and persuasive about your visualization. Attempt to highlight why this visualization is crucial to your imaginary supervisor.
+
+### 4. Using the SBA Business Loans Data, do the following:
+
+a. Create a visualization (plot) of at least two variables using this dataset
+
+b. explain what is good and what is bad about the visualization
+
+c. show a substantially improved visualization
+
+d. describe the improvement and why the improved plot in part **c** helps the reader/viewer more than the original plot in part **a**.
+
+
+### 5. Using the SBA Business Loans Data, do the following:
+
+a. create a table of descriptive statistics of your choice
+
+b. add one descriptive statistic to the plot in part **1c**
+
+c. write a brief explanatory narrative of the visualization in part **2b**. In your explanation, be convincing and persuasive about your visualization. Attempt to highlight why this visualization is crucial to your imaginary supervisor.
+
+
+## Select in-class tasks
+	
+Completion of select in-class tasks will be worth 1 point and will be graded largely by completion. Obvious errors and incomplete work will recieve deductions. 
+
+1. Explain what the Riemannian sums simulator in Example 5b of the Week 7 Notes is doing. Why does it work reasonably well? Can you cook up an example where it will not work while keeping $n = 10000$ (Hint: think of the relationship between $a$, $b$, and $n$)?
+
+2. Create a custom function that computes 3 different outlier detectors given a single vector of data. The function should return 6 cutoff values (2 for each outlier detector) from the following methods:
+
+a. 3 Sigma Rule $|x-\bar{x}|>3 \cdot \hat{\sigma}$ 
+  
+b. 1.5*IQR Rule $x<Q_1-1.5\cdot IQR$ or $x>Q_3+1.5 \cdot IQR$
+  
+c. Hampel Identifier $|x-\tilde{x}|> 3 \cdot \tilde{\sigma}$  
+      - $\tilde{x}$ is the median of $x$  
+      - $\tilde{\sigma}=1.4826 \cdot \textrm{median}\{|x-\tilde{x}|\}$ is the median of the absolute deviation from the median (MADM or MAD) scale estimate. 
+	
