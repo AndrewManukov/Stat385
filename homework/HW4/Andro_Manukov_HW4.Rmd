@@ -340,14 +340,54 @@ a. 3 Sigma Rule $|x-\bar{x}|>3 \cdot \hat{\sigma}$
 ```{r}
 out = function(x)
 {
- 
+  for(i in x)
+  {
+    if(abs(i - mean(x)) > 3 * sd(x))
+    {
+      print(x[i])
+    }
+  }
 }
+y = c(1,5,6,7,8,15)
+out(y)
 ```
-
-  
 b. 1.5*IQR Rule $x<Q_1-1.5\cdot IQR$ or $x>Q_3+1.5 \cdot IQR$
+
+```{r}
+out = function(x)
+{
+  quart = quantile(x)
+  for(i in x)
+  {
+    if(i < quart[2] - (1.5 * quart[4] - quart[2]) | i > quart[4] + (1.5 * quart[4] - quart[2]))
+    {
+      print(x[i])
+    }
+  }
+}
+
+
+y = c(1,5,6,7,8,15)
+out(y)
+```
   
 c. Hampel Identifier $|x-\tilde{x}|> 3 \cdot \tilde{\sigma}$  
       - $\tilde{x}$ is the median of $x$  
       - $\tilde{\sigma}=1.4826 \cdot \textrm{median}\{|x-\tilde{x}|\}$ is the median of the absolute deviation from the median (MADM or MAD) scale estimate. 
-	
+      
+```{r}
+out = function(x)
+{
+  for(i in x)
+  {
+    #if(abs(i - mode(x)) > 3 * 1.4826 * mode(x - mode(x)))
+   # {
+     # print(x[i])
+    #}
+  }
+}
+
+
+y = c(1,5,6,7,8,15)
+out(y)
+```
