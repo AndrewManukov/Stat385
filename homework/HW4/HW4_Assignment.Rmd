@@ -13,7 +13,31 @@ Below you will find problems for you to complete as an individual. It is fine to
 ### 1. Modify the scaler function in the Week 7 notes.
 
 We created a function called `scalar` in the Week 7 Notes. This function takes a numeric or integer vector as an input (check this on your own) and it outputs the scaled numeric or integer vectors as an output. Make a new version of this function that 1) takes a dataframe as an argument 2) scales all of the numeric and integer-valued columns of that dataframe while leaving all other variables alone 3) returns the original dataframe with scaled numeric and integer-valued columns. Verify that your function is working by testing it on two dataframes. The first dataframe can be anything that you want. The second dataframe should consist of only factor variables, i.e. the function should do nothing to this dataframe and also should not output an error message. Your verification checks should be readable, do not simply report the returned dataframes.
+```{r}
+scaler <- function(x)
+{
+  for(col in 1:ncol(x)) #increment through columns in df
+  {
+    
+    tmp = unlist(x[col], use.names = TRUE) #unlist so they can be manipulated
 
+    if(is.numeric(tmp) || is.integer(tmp)) #check if column is numeric or integer
+    {
+      tmp = (tmp - mean(tmp)) / sd(tmp) #standardize
+      x[col] = as.data.frame(tmp) #relist back into dataframe
+    }
+  
+  }
+  print(x) #output
+}
+test1 <- data.frame("Num" = c(4,6,2), "Names" = c("Joe", "Shmoe", "Zoe"), "Friends" = c(1,2,3))
+scaler(test1) #first test
+
+```
+```{r}
+test2 <- data.frame("Totally Random Words" = c("Its", "4", "AM", "and", "I", "didnt", "realize", "this", "is", "due", "Saturday"), "Other random words" = c("a", "b", "c", "d", "e", "f", "g", "h", "i", "z", "e"))
+scaler(test2) #test with only factors
+```
 
 ### 2. Using the Chicago Food Inspections Data, do the following:
 ```{r}
@@ -23,56 +47,284 @@ food
 
 
 a. create a visualization (plot) of at least two variables using this dataset
+
+Situation: Jordon Ramsay, your boss and twin brother of Chef Gordon Ramsay, is staying at Aqua Tower in Chicago. He is the host of Worst Streets, a TV show that searches for worst clusters of restaurants near the same street.
 ```{r}
-plot(food$Latitude, food$Longitude)
+#
+plot(food$Latitude, food$Longitude, ylab = "Longitude", xlab = "Latitude", ylim = c(-87.66, -87.6), xlim = c(41.879,41.881), main = "Latitude and Longitude of Restaurants near Aqua Tower")
 points(x = 41.88, y = -87.61, pch = 19, col = "blue") #Aqua Tower
+legend(x=41.8806, y = -87.60, legend =c("Aqua Tower", "Restaurants"),
+       col=c("blue", "grey"), pch = 19)
 ```
 
 b. explain what is good and what is bad about the visualization
-Bad: No titles, hard to tell whats going on. 
-Good: Blue colored point helps Aqua Tower stand out. 
+Good:
+  - Clusters of Restaurants are easy to identify
+  - Map is relatively clear
+Bad:
+  - Can't tell right away if Restaurant can be a candidate for "Worst Streets"
+  - The gray makes the graph dull. 
 
 c. show a substantially improved visualization
 ```{r}
-food$Color= "grey"
+food$Color= "white"
 food$Color[food$Results == "Pass"] = "chartreuse2"
-food$Color[food$Results == "Fail"] = "darkgray"
-plot(food$Latitude, food$Longitude, xlab = "Latitude", ylab = "Longitude", main = "Passing Food Areas in Relation to Aqua Tower", col = food$Color, ylim = c(-87.7, -87.55), xlim = c(41.8, 41.95))
+food$Color[food$Results == "Fail"] = "red"
+plot(food$Latitude, food$Longitude, xlab = "Latitude", ylab = "Longitude", main = "Latitude and Longitude of Restaurants near Aqua Tower", col = food$Color, ylim = c(-87.66, -87.6), xlim = c(41.879, 41.881))
 points(x = 41.88, y = -87.61, pch = 19, col = "blue", cex = 1.5) #Aqua Tower
+legend(x=41.88045, y = -87.599, legend =c("Aqua Tower", "Passing Inspection", "Failing Inspection"),
+       col=c("blue", "chartreuse2", "red"), pch = 19)
 ```
 d. describe the improvement and why the improved plot in part **c** helps the reader/viewer more than the original plot in part **a**.
 -Color coded observations based on if they passed the inspection. 
 -Made the Aqua Tower point a little bigger
--Zoomed in on the plot to better fill the needs of someone living in Aqua Tower 
-These 3 improvements give the plot some meaning. The first plot was just a plot of all the eating areas along with a blue point signifying Aqua Tower. This new plot gives someone living near Aqua Tower the knowledge of whether the places near them are able to pass inspections.  
+-Expanded Legend
+-Removed points that dont fall in either pass or fail
+The biggest improvement to this plot was color coding the results of the inspection. Now, my boss can easily see the best location to shoot his TV show at would be around latitude 41.8805. The second biggest improvement was removing points that didn't fall into either. This makes the plot clearer and less clustered. The other two improvements are just small details that raise the overall appeal of the graph.  
+
 
 ### 3. Using the Chicago Food Inspections Data, do the following:
 
 a. create a table of descriptive statistics of your choice
+```{r}
+food_table = table(food$Risk, food$Results)
+food_table
+```
 
 b. add one descriptive statistic to the plot in part **1c**
+```{r}
+food$Color= "white"
+food$Color[food$Results == "Pass"] = "chartreuse2"
+food$Color[food$Results == "Fail"] = "red"
+food$pch[food$Risk == "Risk 1 (High)"] = 10 #stands out the most
+food$pch[food$Risk == "Risk 2 (Medium)"] = 17
+food$pch[food$Risk == "Risk 3 (Low)"] = 20
+
+plot(food$Latitude, food$Longitude, xlab = "Latitude", ylab = "Longitude", main = "Latitude and Longitude of Restaurants near Aqua Tower", col = food$Color, ylim = c(-87.66, -87.6), xlim = c(41.879, 41.881), pch = food$pch)
+points(x = 41.88, y = -87.61, pch = 19, col = "blue", cex = 1.5) #Aqua Tower
+legend(x=41.88045, y = -87.599, legend =c("Aqua Tower", "Passing Inspection", "Failing Inspection"),
+       col=c("blue", "chartreuse2", "red"), pch = 19)
+legend(x=41.878925, y = -87.599, legend =c("High Risk", "Medium Risk", "Low Risk"),
+       pch=c(10, 17, 20))
+
+```
 
 c. write a brief explanatory narrative of the visualization in part **2b**. In your explanation, be convincing and persuasive about your visualization. Attempt to highlight why this visualization is crucial to your imaginary supervisor.
 
+Although this plot is a little atypical and the normal form of descriptive statistics cannot be applied (mean, mode, etc..), I decided to group the points into more specific categories. Since Jordon Ramsay is looking for the worst clusters of restaurants, classifying points by an additional variable (type of risk) can be a tiebreaker in certain situations. For example, if the red points around 41.8795 Lat were all high risk while the red points on the right of the plot were all low risk, then Jordon Ramsay might consider visiting the restaurants on the left since they would have failed higher risk inspections. While its clear cut here that the cluster on the right is the best subject but if Jordon needed to use this plot in a different location this descriptive statistic can be useful.  
+
 ### 4. Using the SBA Business Loans Data, do the following:
+Situation: A certain UIUC Statistics professor needs to Launder Money for his criminal empire. Help him find a place to launder his money. 
+
+```{r}
+loan <- read.csv("SBA.csv", stringsAsFactors = TRUE)
+loan
+```
+61801 - Urbana, IL
+61802 - Urbana, IL
+61820 - Champaign, IL
+61874 - Savoy, IL
+```{r}
+#loan_bank_IL = loan[which(loan$BankState =='IL'),]
+loan_bank_UC = loan[which(loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874),]
+loan_bank_UC = loan_bank_UC[which(loan_bank_UC$BankState == "IL"),]
+loan_bank_UC
+```
+
+
+```{r}
+counter = as.data.frame(table(loan_bank_UC$Bank))
+banks = counter[ which(counter$Freq > 10),]
+banks #we want bigger banks, so we choose to "Loan-Back" Laundry through Busey Bank
+```
+
+```{r}
+banks = loan[which((loan$Bank == "BUSEY BANK" | loan$Bank == "CENTRAL ILLINOIS BANK A BRANCH" | loan$Bank == "JPMORGAN CHASE BANK NATL ASSOC" | loan$Bank == "PNC BANK, NATIONAL ASSOCIATION" | loan$Bank == "SMALL BUS. GROWTH CORP") & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+busey = loan[which(loan$Bank == "BUSEY BANK" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+central = loan[which(loan$Bank == "CENTRAL ILLINOIS BANK A BRANCH" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+chase = loan[which(loan$Bank == "JPMORGAN CHASE BANK NATL ASSOC" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+PNC = loan[which(loan$Bank == "PNC BANK, NATIONAL ASSOCIATION" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+BUS = loan[which(loan$Bank == "SMALL BUS. GROWTH CORP" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+
+
+```
 
 a. Create a visualization (plot) of at least two variables using this dataset
+```{r}
+PNC$DisbursementGross = as.numeric(PNC$DisbursementGross)
+PNC$ApprovalFY = as.numeric(PNC$ApprovalFY)
+
+BUS$DisbursementGross = as.numeric(BUS$DisbursementGross)
+BUS$ApprovalFY = as.numeric(BUS$ApprovalFY)
+
+chase$DisbursementGross = as.numeric(chase$DisbursementGross)
+chase$ApprovalFY = as.numeric(chase$ApprovalFY)
+
+banks$DisbursementGross = as.numeric(banks$DisbursementGross)
+banks$ApprovalFY = as.numeric(banks$ApprovalFY)
+
+busey$DisbursementGross = as.numeric(busey$DisbursementGross)
+busey$ApprovalFY = as.numeric(busey$ApprovalFY)
+
+central$DisbursementGross = as.numeric(central$DisbursementGross)
+central$ApprovalFY = as.numeric(central$ApprovalFY)
+
+plot(banks$ApprovalFY + 1962,banks$DisbursementGross, xlab = "Year", ylab = "Disbursement", main = "Cash Disbursement Based on Year")
+abline(h = mean(busey$DisbursementGross), col = "red")
+text(1987,62000, "Busey Mean")
+
+abline(h = mean(central$DisbursementGross), col = "blue")
+text(1987,50000, "Central Mean")
+
+abline(h = mean(PNC$DisbursementGross), col = "yellow")
+text(2000,50000, "PNC Mean")
+
+abline(h = mean(BUS$DisbursementGross), col = "orange")
+text(2010,62000, "BUS Mean")
+
+abline(h = mean(chase$DisbursementGross), col = "green")
+text(1987,81000, "Chase Mean")
+```
+
 
 b. explain what is good and what is bad about the visualization
 
+Good: 
+  -Colors make it easier to determine which line belongs to which bank
+  -Each line correspondes to mean loan disbursement 
+Bad: 
+  -Very Cluttered
+  -Scatterplot is not the most usefull yet
 c. show a substantially improved visualization
 
+```{r}
+PNC$DisbursementGross = as.numeric(PNC$DisbursementGross)
+PNC$ApprovalFY = as.numeric(PNC$ApprovalFY)
+
+BUS$DisbursementGross = as.numeric(BUS$DisbursementGross)
+BUS$ApprovalFY = as.numeric(BUS$ApprovalFY)
+
+chase$DisbursementGross = as.numeric(chase$DisbursementGross)
+chase$ApprovalFY = as.numeric(chase$ApprovalFY)
+
+banks$DisbursementGross = as.numeric(banks$DisbursementGross)
+banks$ApprovalFY = as.numeric(banks$ApprovalFY)
+
+busey$DisbursementGross = as.numeric(busey$DisbursementGross)
+busey$ApprovalFY = as.numeric(busey$ApprovalFY)
+
+central$DisbursementGross = as.numeric(central$DisbursementGross)
+central$ApprovalFY = as.numeric(central$ApprovalFY)
+
+banks$Color= "white"
+banks$Color[banks$Bank == "BUSEY BANK"] = "darkblue"
+banks$Color[banks$Bank == "CENTRAL ILLINOIS BANK A BRANCH"] = "red"
+banks$Color[banks$Bank == "JPMORGAN CHASE BANK NATL ASSOC"] = "lightblue"
+banks$Color[banks$Bank == "PNC BANK, NATIONAL ASSOCIATION"] = "purple"
+banks$Color[banks$Bank == "SMALL BUS. GROWTH CORP"] = "yellow"
+
+
+plot(banks$ApprovalFY + 1962,banks$DisbursementGross, xlab = "Year", ylab = "Disbursement", main = "Cash Disbursement Based on Year", col = banks$Color, sub = "Horizontal Line = Mean")
+abline(h = mean(busey$DisbursementGross), col = "darkblue")
+#text(1987,62000, "Busey Mean")
+
+abline(h = mean(central$DisbursementGross), col = "red")
+#text(1987,50000, "Central Mean")
+
+abline(h = mean(PNC$DisbursementGross), col = "purple")
+#text(2000,50000, "PNC Mean")
+
+abline(h = mean(BUS$DisbursementGross), col = "yellow")
+#text(2010,62000, "BUS Mean")
+
+abline(h = mean(chase$DisbursementGross), col = "lightblue")
+#text(1987,81000, "Chase Mean")
+
+legend(x=1982, y = 45000, legend =c("Busey", "Central", "PNC", "BUS", "Chase"),
+       lty = 1, col = c("darkblue", "red", "purple", "yellow", "lightblue"))
+
+```
+
+
 d. describe the improvement and why the improved plot in part **c** helps the reader/viewer more than the original plot in part **a**.
+-Removed Text
+-Color Coded Points
+-Added Legend
+-Changed Color to better fit some bank colors
+These changes improve the usefulness of the plot because the horizontal lines draw the readers eyes to exactly what they want to see. After just a few seconds of looking at this plot, the certian UIUC Stats Professor will know its best to launder money via loan-back because they've given, on average, the most disbursement. 
 
 
 ### 5. Using the SBA Business Loans Data, do the following:
 
 a. create a table of descriptive statistics of your choice
+```{r}
+#banks_table = table(sapply(banks$DisbursementGross, mean, na.rm=TRUE))
+banks_table = table(mean(banks$DisbursementGross))
+banks_table
+
+```
 
 b. add one descriptive statistic to the plot in part **1c**
+```{r}
+PNC$DisbursementGross = as.numeric(PNC$DisbursementGross)
+PNC$ApprovalFY = as.numeric(PNC$ApprovalFY)
+
+BUS$DisbursementGross = as.numeric(BUS$DisbursementGross)
+BUS$ApprovalFY = as.numeric(BUS$ApprovalFY)
+
+chase$DisbursementGross = as.numeric(chase$DisbursementGross)
+chase$ApprovalFY = as.numeric(chase$ApprovalFY)
+
+banks$DisbursementGross = as.numeric(banks$DisbursementGross)
+banks$ApprovalFY = as.numeric(banks$ApprovalFY)
+
+busey$DisbursementGross = as.numeric(busey$DisbursementGross)
+busey$ApprovalFY = as.numeric(busey$ApprovalFY)
+
+central$DisbursementGross = as.numeric(central$DisbursementGross)
+central$ApprovalFY = as.numeric(central$ApprovalFY)
+
+banks$Color= "white"
+banks$Color[banks$Bank == "BUSEY BANK"] = "darkblue"
+banks$Color[banks$Bank == "CENTRAL ILLINOIS BANK A BRANCH"] = "red"
+banks$Color[banks$Bank == "JPMORGAN CHASE BANK NATL ASSOC"] = "lightblue"
+banks$Color[banks$Bank == "PNC BANK, NATIONAL ASSOCIATION"] = "purple"
+banks$Color[banks$Bank == "SMALL BUS. GROWTH CORP"] = "yellow"
+
+
+plot(banks$ApprovalFY + 1962,banks$DisbursementGross, xlab = "Year", ylab = "Disbursement", main = "Cash Disbursement Based on Year", col = banks$Color, sub = "Horizontal Line = Mean")
+abline(h = mean(busey$DisbursementGross), col = "darkblue")
+#text(1987,62000, "Busey Mean")
+
+abline(h = mean(central$DisbursementGross), col = "red")
+#text(1987,50000, "Central Mean")
+
+abline(h = mean(PNC$DisbursementGross), col = "purple")
+#text(2000,50000, "PNC Mean")
+
+abline(h = mean(BUS$DisbursementGross), col = "yellow")
+#text(2010,62000, "BUS Mean")
+
+abline(h = mean(chase$DisbursementGross), col = "lightblue")
+#text(1987,81000, "Chase Mean")
+
+abline(h = banks_table, col = "black")
+#text(1987,81000, "Chase Mean")
+
+legend(x=1982, y = 50000, legend =c("Overall", "Busey", "Central", "PNC", "BUS", "Chase"),
+       lty = 1, col = c("black" , "darkblue", "red", "purple", "yellow", "lightblue"))
+
+```
 
 c. write a brief explanatory narrative of the visualization in part **2b**. In your explanation, be convincing and persuasive about your visualization. Attempt to highlight why this visualization is crucial to your imaginary supervisor.
 
+Since the leader of this money-laundering-criminal-empire is also a Stats Professor, he would like to see the overall mean along with the means of all of the other banks to guage how much more money chase bank loans out compared to the overall average. 
 
 ## Select in-class tasks
 	
@@ -80,9 +332,18 @@ Completion of select in-class tasks will be worth 1 point and will be graded lar
 
 1. Explain what the Riemannian sums simulator in Example 5b of the Week 7 Notes is doing. Why does it work reasonably well? Can you cook up an example where it will not work while keeping $n = 10000$ (Hint: think of the relationship between $a$, $b$, and $n$)?
 
+THe rienmannian sums simulator estimates the integral of a and b through n iterations. An example where this would not work is if.........
+
 2. Create a custom function that computes 3 different outlier detectors given a single vector of data. The function should return 6 cutoff values (2 for each outlier detector) from the following methods:
 
-a. 3 Sigma Rule $|x-\bar{x}|>3 \cdot \hat{\sigma}$ 
+a. 3 Sigma Rule $|x-\bar{x}|>3 \cdot \hat{\sigma}$
+```{r}
+out = function(x)
+{
+ 
+}
+```
+
   
 b. 1.5*IQR Rule $x<Q_1-1.5\cdot IQR$ or $x>Q_3+1.5 \cdot IQR$
   
