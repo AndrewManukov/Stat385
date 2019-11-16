@@ -1,0 +1,324 @@
+---
+title: "STAT 385 Homework Assignment 05"
+author: "Andro Manukov"
+date: "Due by 12:00 PM 11/16/2019"
+output: html_document
+---
+
+
+## HW 5 Problems
+
+Below you will find problems for you to complete as an individual. It is fine to discuss the homework problems with classmates, but cheating is prohibited and will be harshly penalized if detected.
+```{r, echo=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+```
+
+### 1. Using the **ggplot** function and tidyverse functionality, do the following visualizations:
+```{r, eval=TRUE}
+library(ggrepel)
+library(faraway)
+library(xtable)
+library(data.table)
+library(usmap)
+library(maps)
+```
+
+a. recreate your improved visualization in **problem 2a of HW04**
+
+```{r}
+food <- read.csv("Food_Inspections.csv")
+food$Color= "white"
+food$Color[food$Results == "Pass"] = "chartreuse2"
+food$Color[food$Results == "Fail"] = "red"
+```
+
+```{r, eval=TRUE}
+ggplot(data = food) +
+  geom_point(mapping = aes(x = Latitude, y = Longitude, color = Color)) +
+  geom_point(mapping = aes(x = 41.88, y = -87.61), color = "blue", size = 5) + 
+  ggtitle("Latitude and Longitude of Restaurants near Aqua Tower") +
+  theme(legend.position = "none") + 
+  labs(color="Pass/Fail") +
+  ylim(c(-87.66, -87.6)) +
+  xlim(c(41.879, 41.881)) 
+
+#####FOR NOW THE LEGEND WILL BE OFF, NEED TO RENAME VARS TO GET THEM TO DISPLAY STUFF
+```
+
+
+
+b. add a new visually appealing layer to the plot that helps clarify the plot and separately include a short description beneath the plot, such as "Fig. 1 shows..."
+```{r}
+ggplot(data = subset(food, food$Facility.Type == "Restaurant" & food$Color != "white")) +
+  geom_point(mapping = aes(x = Latitude, y = Longitude, color = Color, alpha = Color == "chartreuse2")) +
+  geom_point(mapping = aes(x = 41.88, y = -87.61), color = "blue", size = 5) + 
+  ggtitle("Latitude and Longitude of Restaurants near Aqua Tower") +
+  theme(legend.position = "none") + 
+  labs(color="Pass/Fail") +
+  ylim(c(-87.66, -87.6)) +
+  xlim(c(41.879, 41.881)) +
+  scale_alpha_manual(values = c(1, 0.1), guide = FALSE)
+
+#changes made:
+  #removed clutter by subsetting by restaurants because Gordon Ramsay's brother wants to visit restaurants
+  #Removed white points
+  #
+  
+```
+Jordon Ramsay wants to find a positive and clean restaurant to show for his TV show. As you can see with this figure, I decided to change the alpha of those restaurants with a failing grade, making them less prevalent on the plot and easier for Jordon Ramsay to find better restaurants.
+
+
+c. recreate your improved visualization in **problem 4a of HW04**
+```{r}
+
+```
+
+
+
+```{r}
+#this data set was derived from SBALoan dataset. using zipcodes near Urbana-Champaign and banks that have more than 10 entries in the SBALoan dataset. (all in HW4)
+ggplot(data = banks) +
+  geom_hline(yintercept = mean(BUS$DisbursementGross), color = "yellow") +
+  geom_hline(yintercept = mean(chase$DisbursementGross), color = "lightblue") +
+  geom_hline(yintercept = mean(busey$DisbursementGross), color = "darkblue") +
+  geom_hline(yintercept = mean(central$DisbursementGross), color = "red") +
+  geom_hline(yintercept = mean(PNC$DisbursementGross), color = "purple") +
+  geom_hline(yintercept = mean(banks$DisbursementGross), color = "black") +
+  geom_point(mapping = aes(x = ApprovalFY + 1962, y = DisbursementGross, color = Color)) +
+  ggtitle("Cash Disbursements Based on Year") +
+  xlab("Year") + ylab("Disbursement Gross")
+  
+  
+  
+  
+  
+```
+
+d. add a new visually appealing layer to the plot that helps clarify the plot and separately include a short description beneath the plot, such as "Fig. 2 shows...
+
+
+```{r}
+ggplot(data = banks) +
+  geom_hline(yintercept = mean(BUS$DisbursementGross), color = "yellow") +
+  geom_hline(yintercept = mean(chase$DisbursementGross), color = "lightblue", size = 2.5) +
+  geom_hline(yintercept = mean(busey$DisbursementGross), color = "darkblue") +
+  geom_hline(yintercept = mean(central$DisbursementGross), color = "red") +
+  geom_hline(yintercept = mean(PNC$DisbursementGross), color = "purple") +
+  geom_hline(yintercept = mean(banks$DisbursementGross), color = "black") +
+  geom_point(mapping = aes(x = ApprovalFY + 1962, y = DisbursementGross, color = Color)) +
+  ggtitle("Cash Disbursements Based on Year") +
+  xlab("Year") + ylab("Disbursement Gross") 
+  
+```
+
+### 2. Successfully import the US Natality Data (for year 2015). The necesssary data links are in the Datasets file on Prof. Kinson's course website (see [here](https://uofi.box.com/shared/static/kv89ff7n55bkjsxrsx9nlthpl1yocqpo.html)). One is a single csv file 1.9 GB in size. If your computer cannot handle that processing, do use the partitioned version of the data, which are 20 csv files of the same US Natality Data. Here's a [User Guide](https://uofi.box.com/shared/static/ub0tgcz91z2fpnoc1yazkss5yt2bobhy.pdf) for this data that may help with understanding the data. It might also be helpful for this problem or later problems.
+
+#### **Bonus (worth 5 additional points, i.e. your max HW 05 score could be 15 out of 10): do problem 2 using parallel programming ideas (particularly with foreach) discussed in class. No outside functions/packages other than those discussed in the notes on parallel programming.**
+```{r}
+library(parallel)
+library(foreach)
+library(doParallel)
+library(readr)
+```
+
+```{r}
+cores <- getDoParWorkers()
+cl <- makeCluster(cores)
+registerDoParallel(cl)
+
+```
+
+
+```{r}
+#C:\Users\andre\Desktop\UIUC\Fall2019\STAT385\manukov2\homework\HW5\natfolder
+prob2 <- read_csv("natfolder/nat15p1.csv")
+
+TotalNat <- prob2
+
+system.time
+({
+  foreach(i = 2:20, .combine = rbind) %dopar% 
+    {
+      prob2 <- read_csv(paste("natfolder/nat15p",i,".csv", sep = ""))
+      TotalNat <- rbind(TotalNat, prob2)
+      rm(prob2)
+    }
+})
+```
+
+
+
+
+### 3. Using the **ggplot** function and tidyverse functionality, recreate or reimagine the following visualizations using the appropriate data. Be sure to use the visual design considerations from Knaflic's **Storytelling with Data**.
+```{r}
+TotalNatBackup = TotalNat
+```
+
+
+```{r}
+Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="1", "US Born", Nat$MBSTATE_REC) #Renaming var and filtering
+Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="2", "Outside of US Born", Nat$MBSTATE_REC)
+Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="3", "Unknown", Nat$MBSTATE_REC)
+
+Nat$MEDUC <- ifelse(Nat$MEDUC == "6", "Bachelors", Nat$MEDUC)
+Nat$MEDUC <- ifelse(Nat$MEDUC == "7", "Masters or Higher", Nat$MEDUC)
+Nat$MEDUC <- ifelse(Nat$MEDUC == "8", "Masters or Higher", Nat$MEDUC)
+
+Nat$MRACE6 <- ifelse(Nat$MRACE6 == "1", "White", Nat$MRACE6)
+Nat$MRACE6 <- ifelse(Nat$MRACE6 == "2", "Black", Nat$MRACE6)
+Nat$MRACE6 <- ifelse(Nat$MRACE6 == "3", "American Indian", Nat$MRACE6)
+Nat$MRACE6 <- ifelse(Nat$MRACE6 == "4", "Asian", Nat$MRACE6)
+Nat$MRACE6 <- ifelse(Nat$MRACE6 == "5", "Pacific Islanders", Nat$MRACE6)
+Nat$MRACE6 <- ifelse(Nat$MRACE6 == "6", "More than one Race", Nat$MRACE6)
+
+Nat$MCRACEnew = Nat$MRACE15
+
+
+```
+
+a. The image below uses the US Natlity Data. Also, explain the image with Markdown syntax.
+```{r}
+ggplot(data = subset(Nat, (Nat$MEDUC == "Bachelors" | Nat$MEDUC == "Masters or Higher") & (Nat$MBSTATE_REC == "US Born" | Nat$MBSTATE_REC == "Outside of US Born"))) +
+  coord_flip() +
+  geom_bar(mapping = aes(x = factor(MRACE6), y = (..count..)/sum(..count..), fill=factor(MEDUC))) +
+  facet_wrap( ~ factor(MBSTATE_REC)) +
+  scale_y_continuous(labels = scales::percent)
+```
+
+![](https://uofi.box.com/shared/static/ijcjlnwjq7uwrv3paf4bmwam20h34w2d.png)
+
+b. The image below uses the US Natlity Data. Also, explain the image with Markdown syntax (do not include the explanation within the visualization).
+
+![](https://uofi.box.com/shared/static/1b5n0frv30n5bf3un7pldmxtf6lvwi75.png)
+
+c. The image below uses the Chicago Food Inspections Data [link here](https://uofi.box.com/shared/static/5637axblfhajotail80yw7j2s4r27hxd.csv). Also, explain the image with Markdown syntax (do not include the explanation within the visualization).
+```{r}
+ggplot(data = subset(food, food$Color == "red" & food$Inspection.Date >= "1/1/2015" & food$Inspection.Date <= "12/31/2016")) +
+  geom_point(mapping = aes(x = Latitude, y = Longitude, color = Color)) +
+  ggtitle("Restaurants Failing to Pass Inspections 2015 - 2016") +
+  theme(legend.position = "none") + 
+  labs(color="Pass/Fail") 
+```
+
+![](https://uofi.box.com/shared/static/xn71gksmqvz6z30i145c2pnwzrtzblh4.png)
+
+d. The image below uses the Chicago Food Inspections Data. Also, explain the image with Markdown syntax (do not include the explanation within the visualization).
+
+```{r}
+
+
+```
+
+```{r}
+ggplot(data = food, aes(x = food$Inspection.Date)) +
+  geom_density()
+```
+
+![](https://uofi.box.com/shared/static/19hgnx2otbpfk2i8kcnk9uthw4kirvux.png)
+
+
+### 4. Do the following:
+
+Redo problem 3 in **HW03** using the parallel programming.  Does parallel computing perform the tasks in parts **c** and **e** faster than the method that you used in **HW03**? Show your work including the runtimes for the un-parallelized and parallelized versions.
+
+```{r}
+part4df = read_csv("https://uofi.box.com/shared/static/mwntzgp2rvyewf292k6i62pykjz1onnw.csv")
+```
+
+```{r}
+colnames(part4df)[colnames(part4df) == "unknown1"] <- "x" #renaming first col to x
+se <- function(x) sd(x) / sqrt(length((x))) #creating SE function
+statisticX = (mean(part4df$x) - 10) / se(part4df$x) 
+
+#partCPara
+resamples <- rep(0,10000)
+
+resamples <- rep(0,10000)
+y <- sample(part4df$x, replace = TRUE)
+resamples <- (mean(y) - mean(part4df$x)) / se(y)
+resamples
+
+```
+
+
+### 5. Problem in parallel coding
+
+a. Install the **conformal.glm** R package which can be found at https://github.com/DEck13/conformal.glm.  
+
+Run the following code:
+
+```{r, eval = FALSE}
+library(devtools)
+install_github(repo = "DEck13/conformal.glm", subdir="conformal.glm")
+library(HDInterval)
+library(MASS)
+library(parallel)
+library(conformal.glm)
+set.seed(13)
+n <- 250
+# generate predictors
+x <- runif(n)
+# set regression coefficient vector
+beta <- c(3, 5)
+# generate responses from a linear regression model
+y <- rnorm(n, mean = cbind(1, x) %*% beta, sd = 3)
+# store predictors and responses as a dataframe
+dat <- data.frame(y = y, x = x)
+# fit linear regression model
+model <- lm(y ~ x, data = dat)
+# obtain OLS estimator of beta
+betahat <- model$coefficients
+# convert predictors into a matrix
+Xk <- as.matrix(x, nrow = n)
+# extract internal model information, this is necessary for the assignment
+call <- model$call
+formula <- call$formula
+family <- "gaussian"
+link <- "identity"
+newdata.formula <- as.matrix(model.frame(formula, as.data.frame(dat))[, -1])
+# This function takes on a new (x,y) data point and reports a 
+# value corresponding to how similar this new data point is 
+# with the data that we generated, higher numbers are better.  
+# The goal is to use this function to get a range of new y 
+# values that agrees with our generated data at each x value in 
+# our generated data set.
+density_score <- function(ynew, xnew){
+  rank(phatxy(ynew = ynew, xnew = xnew, Yk = y, Xk = Xk, xnew.modmat = xnew, 
+    data = dat, formula = formula, family = family, link = link))[n+1]
+}
+# We try this out on the first x value in our generated data set. 
+# In order to do this we write two line searches
+xnew <- x[1]
+# start line searches at the predicted response value 
+# corresponding to xnew
+ystart <- ylwr <- yupr <- as.numeric(c(1,xnew) %*% betahat)
+score <- density_score(ynew = ystart, xnew = xnew)
+# line search 1: line search that estimates the largest y 
+# value corresponding to the first x value that agrees with 
+# our generated data 
+while(score > 13){
+  yupr <- yupr + 0.01
+  score <- density_score(ynew = yupr, xnew = xnew)
+}
+# line search 2: line search that estimates the smallest y 
+# value corresponding to the first x value that agrees with 
+# our generated data 
+score <- density_score(ynew = ystart, xnew = xnew)
+while(score > 13){
+  ylwr <- ylwr - 0.01
+  score <- density_score(ynew = ylwr, xnew = xnew)
+}
+```
+
+b. Write a function which runs the two line searches in part **a** for the jth generated predictor value.
+```{r}
+
+```
+
+c. Use parallel programming to run the function you wrote in part **b**.  Save the output and record the time that it took to perform these calculations  *NOTE: It is not advised to use `detectCores` as an argument in defining the number of workers you want. It's much better to specify the number of workers explicitly.*
+
+d. Redo the calculation in part **c** using ``lapply`` and record the time it took to run this job. Which method is faster?
+
+e. Using **ggplot**, plot the original data and depict lines of the lower and upper boundaries that you computed from part **c**. 
+
+
