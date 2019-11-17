@@ -157,6 +157,7 @@ banks$Color[banks$Bank == "SMALL BUS. GROWTH CORP"] = "yellow"
 
 ```{r}
 #this data set was derived from SBALoan dataset. using zipcodes near Urbana-Champaign and banks that have more than 10 entries in the SBALoan dataset. (all in HW4)
+
 ggplot(data = banks) +
   geom_hline(yintercept = mean(BUS$DisbursementGross), color = "yellow") +
   geom_hline(yintercept = mean(chase$DisbursementGross), color = "lightblue") +
@@ -166,7 +167,7 @@ ggplot(data = banks) +
   geom_hline(yintercept = mean(banks$DisbursementGross), color = "black") +
   geom_point(mapping = aes(x = ApprovalFY + 1962, y = DisbursementGross, color = Color)) +
   ggtitle("Cash Disbursements Based on Year") +
-  xlab("Year") + ylab("Disbursement Gross")
+  xlab("Year") + ylab("Disbursement Gross") 
   
   
   
@@ -185,7 +186,9 @@ ggplot(data = banks) +
   ggtitle("Cash Disbursements Based on Year") +
   xlab("Year") + ylab("Disbursement Gross") +
   geom_text(aes(x = 1987, y = 80000, label = "Chase Bank Overall Mean")) +
-  geom_text(aes(x = 1984.5, y = 63000, label = "Overall Mean"))
+  geom_text(aes(x = 1984.5, y = 63000, label = "Overall Mean")) + 
+  theme(legend.position = "none") 
+  
   
 ```
 Fig 2 Shows a more clear representation on why Chase bank would be better fit for laundering money (when only considering the mean cash disbursements). This new figure removes the clutter of irrelavent banks and essentially combines them into one "Overall Mean" line. 
@@ -277,6 +280,8 @@ ggplot(data = subset(Nat, (Nat$MEDUC == "Bachelors" | Nat$MEDUC == "Masters or H
   facet_wrap( ~ factor(MBSTATE_REC)) +
   scale_y_continuous(labels = scales::percent)
 ```
+I decided to switch a few things compared to the original image. For 1, I decided to compare the bars side by side instead of stacked on each other. I think the stacked format lessens the readability of a barchart. Secondly, I decided to split the bar graphs into 2 different bar graphs with a more clear divider between US born and Not US born. I think this is better than the original format since its easier to compare the results between US born Asian Mothers and Non-US Born Asian Mothers.
+
 
 ![](https://uofi.box.com/shared/static/ijcjlnwjq7uwrv3paf4bmwam20h34w2d.png)
 
@@ -294,6 +299,8 @@ ggplot(data = subset(Nat, (Nat$MAGER >= 30) & (Nat$MBSTATE_REC == "US Born" | Na
   facet_wrap( ~ factor(MBSTATE_REC)) +
   scale_y_continuous(labels = scales::percent)
 ```
+I took a similar approach to this bar graph as I did with the previous one. This image is a bar graph comparing the percentage of Asian Mothers over 30 and under 40 with those who are over 40. While stacking the barplot does not look as confusing as the previous graph, I think doing a side-by-side is still more clear. Additionally, I split the bar graph into two parts, US Born and Non-US Born.
+
 
 ![](https://uofi.box.com/shared/static/1b5n0frv30n5bf3un7pldmxtf6lvwi75.png)
 
@@ -309,8 +316,14 @@ ggplot(data = subset(food, food$Color == "red" & food$Inspection.Date >= "1/1/20
   geom_point(mapping = aes(x = Latitude, y = Longitude, color = Color)) +
   ggtitle("Restaurants Failing to Pass Inspections 2015 - 2016") +
   theme(legend.position = "none") + 
-  labs(color="Pass/Fail") 
+  labs(color="Pass/Fail") +
+  geom_hline(yintercept=-87.6298) + #Chicago center
+  geom_vline(xintercept=41.8781) 
+
+  
 ```
+This one is pretty simple, the red dots are all restaurants that failed inspection and the cross section of the two lines is the center of chicago. It is a barebones version of the graph below. 
+
 
 ![](https://uofi.box.com/shared/static/xn71gksmqvz6z30i145c2pnwzrtzblh4.png)
 
@@ -344,15 +357,70 @@ se <- function(x) sd(x) / sqrt(length((x))) #creating SE function
 statisticX = (mean(part4df$x) - 10) / se(part4df$x) 
 
 #partCPara
-resamples <- rep(0,10000)
+#resamples <- rep(0,10000)
+trials = 10000
 
-resamples <- rep(0,10000)
-y <- sample(part4df$x, replace = TRUE)
-resamples <- (mean(y) - mean(part4df$x)) / se(y)
-resamples
+results <- data.frame()
+part_c_not_para <- system.time({
+  trial <- 1
+  while(trial <= trials)
+  {
+    j <- sample(part4df$x, replace = TRUE); 
+    result1 <- (mean(j) - mean(part4df$x)) / se(j)
+    results <- rbind(results, result1)
+    trial <- trial + 1
+  }
+})
 
+colnames(part4df)[colnames(part4df) == "unknown2"] <- "y" #renaming second col to y
+statisticSecond = (mean(part4df$y) - 10) / se(part4df$y) 
+
+results2 <- data.frame()
+part_e_not_para <- system.time({
+  trial <- 1
+  while(trial <= trials)
+  {
+    j <- sample(part4df$y, replace = TRUE); 
+    result1 <- (mean(j) - mean(part4df$y)) / se(j)
+    results <- rbind(results2, result1)
+    trial <- trial + 1
+  }
+})
+
+
+
+print(part_c_not_para)
+print(part_e_not_para)
+```
+```{r}
+sample_fn <- function(trial) {
+  j <- sample(part4df$y, replace = TRUE); 
+  result1 <- (mean(j) - mean(part4df$y)) / se(j)
+  results <- rbind(results2, result1)
+}
+
+sample_fn_part_c <- function(trial) {
+  j <- sample(part4df$y, replace = TRUE); 
+  result1 <- (mean(j) - mean(part4df$x)) / se(j)
+  results <- rbind(results2, result1)
+}
 ```
 
+```{r}
+part_e_para <- system.time({
+  results3 <- mclapply(trials, sample_fn, mc.cores = 1)
+})
+
+part_c_para <- system.time({
+  results4 <- mclapply(trials, sample_fn_part_c, mc.cores = 1)
+})
+
+
+print(part_c_para)
+print(part_e_para)
+```
+
+As you can see, parallel computing performs faster than normal computing in this problem. 
 
 ### 5. Problem in parallel coding
 
