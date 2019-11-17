@@ -11,6 +11,46 @@ output: html_document
 Below you will find problems for you to complete as an individual. It is fine to discuss the homework problems with classmates, but cheating is prohibited and will be harshly penalized if detected.
 ```{r, echo=FALSE}
 knitr::opts_chunk$set(error = TRUE)
+
+local({
+	
+	# The directory where Pandoc will be extracted. Feel free
+	# to adjust this path as appropriate.
+	dir <- "~/rstudio-pandoc"
+	
+	# The version of Pandoc to be installed.
+	version <- "2.7.1"
+	
+	# Create and move to the requested directory.
+	dir.create(dir, showWarnings = FALSE, recursive = TRUE)
+	owd <- setwd(dir)
+	on.exit(setwd(owd), add = TRUE)
+	
+	# Construct path to pandoc.
+	root <- "https://s3.amazonaws.com/rstudio-buildtools"
+	suffix <- sprintf("pandoc-%s-windows-x86_64.zip", version)
+	url <- file.path(root, "pandoc-rstudio", version, suffix)
+	
+	# Download and extract pandoc.
+	file <- basename(url)
+	utils::download.file(url, destfile = file)
+	utils::unzip(file)
+	unlink(file)
+	
+	# Write .Renviron to update the version of Pandoc used.
+	entry <- paste("RSTUDIO_PANDOC", shQuote(path.expand(dir)), sep = " = ")
+	contents <- if (file.exists("~/.Renviron")) readLines("~/.Renviron")
+	filtered <- grep("^RSTUDIO_PANDOC", contents, value = TRUE, invert = TRUE)
+	amended <- union(filtered, entry)
+	writeLines(amended, "~/.Renviron")
+	
+	# Report change to the user.
+	writeLines("Updated .Renviron:\n")
+	writeLines(amended)
+	writeLines("\nPlease restart RStudio for these changes to take effect.")
+	
+})
+
 ```
 
 ### 1. Using the **ggplot** function and tidyverse functionality, do the following visualizations:
@@ -57,7 +97,8 @@ ggplot(data = subset(food, food$Facility.Type == "Restaurant" & food$Color != "w
   labs(color="Pass/Fail") +
   ylim(c(-87.66, -87.6)) +
   xlim(c(41.879, 41.881)) +
-  scale_alpha_manual(values = c(1, 0.1), guide = FALSE)
+  scale_alpha_manual(values = c(1, 0.1), guide = FALSE) +
+  
 
 #changes made:
   #removed clutter by subsetting by restaurants because Gordon Ramsay's brother wants to visit restaurants
@@ -70,8 +111,47 @@ Jordon Ramsay wants to find a positive and clean restaurant to show for his TV s
 
 c. recreate your improved visualization in **problem 4a of HW04**
 ```{r}
-
+loan <- read.csv("SBA.csv", stringsAsFactors = TRUE)
 ```
+```{r}
+banks = loan[which((loan$Bank == "BUSEY BANK" | loan$Bank == "CENTRAL ILLINOIS BANK A BRANCH" | loan$Bank == "JPMORGAN CHASE BANK NATL ASSOC" | loan$Bank == "PNC BANK, NATIONAL ASSOCIATION" | loan$Bank == "SMALL BUS. GROWTH CORP") & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+busey = loan[which(loan$Bank == "BUSEY BANK" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+central = loan[which(loan$Bank == "CENTRAL ILLINOIS BANK A BRANCH" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+chase = loan[which(loan$Bank == "JPMORGAN CHASE BANK NATL ASSOC" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+PNC = loan[which(loan$Bank == "PNC BANK, NATIONAL ASSOCIATION" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+BUS = loan[which(loan$Bank == "SMALL BUS. GROWTH CORP" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+
+PNC$DisbursementGross = as.numeric(PNC$DisbursementGross) #changing to numeric
+PNC$ApprovalFY = as.numeric(PNC$ApprovalFY)
+
+BUS$DisbursementGross = as.numeric(BUS$DisbursementGross)
+BUS$ApprovalFY = as.numeric(BUS$ApprovalFY)
+
+chase$DisbursementGross = as.numeric(chase$DisbursementGross)
+chase$ApprovalFY = as.numeric(chase$ApprovalFY)
+
+banks$DisbursementGross = as.numeric(banks$DisbursementGross)
+banks$ApprovalFY = as.numeric(banks$ApprovalFY)
+
+busey$DisbursementGross = as.numeric(busey$DisbursementGross)
+busey$ApprovalFY = as.numeric(busey$ApprovalFY)
+
+central$DisbursementGross = as.numeric(central$DisbursementGross)
+central$ApprovalFY = as.numeric(central$ApprovalFY)
+
+banks$Color= "white"
+banks$Color[banks$Bank == "BUSEY BANK"] = "darkblue"
+banks$Color[banks$Bank == "CENTRAL ILLINOIS BANK A BRANCH"] = "red"
+banks$Color[banks$Bank == "JPMORGAN CHASE BANK NATL ASSOC"] = "lightblue"
+banks$Color[banks$Bank == "PNC BANK, NATIONAL ASSOCIATION"] = "purple"
+banks$Color[banks$Bank == "SMALL BUS. GROWTH CORP"] = "yellow"
+```
+
 
 
 
@@ -99,17 +179,17 @@ d. add a new visually appealing layer to the plot that helps clarify the plot an
 
 ```{r}
 ggplot(data = banks) +
-  geom_hline(yintercept = mean(BUS$DisbursementGross), color = "yellow") +
-  geom_hline(yintercept = mean(chase$DisbursementGross), color = "lightblue", size = 2.5) +
-  geom_hline(yintercept = mean(busey$DisbursementGross), color = "darkblue") +
-  geom_hline(yintercept = mean(central$DisbursementGross), color = "red") +
-  geom_hline(yintercept = mean(PNC$DisbursementGross), color = "purple") +
-  geom_hline(yintercept = mean(banks$DisbursementGross), color = "black") +
   geom_point(mapping = aes(x = ApprovalFY + 1962, y = DisbursementGross, color = Color)) +
+  geom_hline(yintercept = mean(chase$DisbursementGross), color = "lightblue", size = 2.5) +
+  geom_hline(yintercept = mean(banks$DisbursementGross), color = "black", size = 2.5) +
   ggtitle("Cash Disbursements Based on Year") +
-  xlab("Year") + ylab("Disbursement Gross") 
+  xlab("Year") + ylab("Disbursement Gross") +
+  geom_text(aes(x = 1987, y = 80000, label = "Chase Bank Overall Mean")) +
+  geom_text(aes(x = 1984.5, y = 63000, label = "Overall Mean"))
   
 ```
+Fig 2 Shows a more clear representation on why Chase bank would be better fit for laundering money (when only considering the mean cash disbursements). This new figure removes the clutter of irrelavent banks and essentially combines them into one "Overall Mean" line. 
+
 
 ### 2. Successfully import the US Natality Data (for year 2015). The necesssary data links are in the Datasets file on Prof. Kinson's course website (see [here](https://uofi.box.com/shared/static/kv89ff7n55bkjsxrsx9nlthpl1yocqpo.html)). One is a single csv file 1.9 GB in size. If your computer cannot handle that processing, do use the partitioned version of the data, which are 20 csv files of the same US Natality Data. Here's a [User Guide](https://uofi.box.com/shared/static/ub0tgcz91z2fpnoc1yazkss5yt2bobhy.pdf) for this data that may help with understanding the data. It might also be helpful for this problem or later problems.
 
@@ -129,7 +209,7 @@ registerDoParallel(cl)
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 #C:\Users\andre\Desktop\UIUC\Fall2019\STAT385\manukov2\homework\HW5\natfolder
 prob2 <- read_csv("natfolder/nat15p1.csv")
 
@@ -151,7 +231,7 @@ system.time
 
 ### 3. Using the **ggplot** function and tidyverse functionality, recreate or reimagine the following visualizations using the appropriate data. Be sure to use the visual design considerations from Knaflic's **Storytelling with Data**.
 ```{r}
-TotalNatBackup = TotalNat
+Nat <- read_csv("natfolder/nat15p1.csv")
 ```
 
 
@@ -160,6 +240,12 @@ Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="1", "US Born", Nat$MBSTATE_REC) #Re
 Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="2", "Outside of US Born", Nat$MBSTATE_REC)
 Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="3", "Unknown", Nat$MBSTATE_REC)
 
+
+```
+
+
+```{r}
+Nat$MCRACEnew = Nat$MRACE15
 Nat$MEDUC <- ifelse(Nat$MEDUC == "6", "Bachelors", Nat$MEDUC)
 Nat$MEDUC <- ifelse(Nat$MEDUC == "7", "Masters or Higher", Nat$MEDUC)
 Nat$MEDUC <- ifelse(Nat$MEDUC == "8", "Masters or Higher", Nat$MEDUC)
@@ -171,16 +257,23 @@ Nat$MRACE6 <- ifelse(Nat$MRACE6 == "4", "Asian", Nat$MRACE6)
 Nat$MRACE6 <- ifelse(Nat$MRACE6 == "5", "Pacific Islanders", Nat$MRACE6)
 Nat$MRACE6 <- ifelse(Nat$MRACE6 == "6", "More than one Race", Nat$MRACE6)
 
-Nat$MCRACEnew = Nat$MRACE15
+Nat$MRACE15 <- ifelse(Nat$MRACE15 == "4", "Asian Indian", Nat$MRACE15)
+Nat$MRACE15 <- ifelse(Nat$MRACE15 == "5", "Chinese", Nat$MRACE15)
+Nat$MRACE15 <- ifelse(Nat$MRACE15 == "6", "Filipino", Nat$MRACE15)
+Nat$MRACE15 <- ifelse(Nat$MRACE15 == "7", "Japanese", Nat$MRACE15)
+Nat$MRACE15 <- ifelse(Nat$MRACE15 == "8", "Korean", Nat$MRACE15)
+Nat$MRACE15 <- ifelse(Nat$MRACE15 == "9", "Vietnamese", Nat$MRACE15)
+
 
 
 ```
 
 a. The image below uses the US Natlity Data. Also, explain the image with Markdown syntax.
 ```{r}
-ggplot(data = subset(Nat, (Nat$MEDUC == "Bachelors" | Nat$MEDUC == "Masters or Higher") & (Nat$MBSTATE_REC == "US Born" | Nat$MBSTATE_REC == "Outside of US Born"))) +
+#Using the whole dataset literally crashes everything so im using the first parititon
+ggplot(data = subset(Nat, (Nat$MEDUC == "Bachelors" | Nat$MEDUC == "Masters or Higher") & (Nat$MBSTATE_REC == "US Born" | Nat$MBSTATE_REC == "Outside of US Born") & (Nat$MRACE15 == "Asian Indian" | Nat$MRACE15 == "Chinese" | Nat$MRACE15 == "Filipino" | Nat$MRACE15 == "Japanese" | Nat$MRACE15 == "Korean" | Nat$MRACE15 == "Vietnamese"))) +
   coord_flip() +
-  geom_bar(mapping = aes(x = factor(MRACE6), y = (..count..)/sum(..count..), fill=factor(MEDUC))) +
+  geom_bar(mapping = aes(x = factor(MRACE15), y = (..count..)/sum(..count..), fill=factor(MEDUC)), position = "dodge") +
   facet_wrap( ~ factor(MBSTATE_REC)) +
   scale_y_continuous(labels = scales::percent)
 ```
@@ -188,10 +281,29 @@ ggplot(data = subset(Nat, (Nat$MEDUC == "Bachelors" | Nat$MEDUC == "Masters or H
 ![](https://uofi.box.com/shared/static/ijcjlnwjq7uwrv3paf4bmwam20h34w2d.png)
 
 b. The image below uses the US Natlity Data. Also, explain the image with Markdown syntax (do not include the explanation within the visualization).
+```{r}
+Nat$isOver40 <- ifelse(Nat$MAGER >= 40, "40 and Over", "30 through 39")
+```
+
+
+```{r}
+#Using the whole dataset literally crashes everything so im using the first parititon
+ggplot(data = subset(Nat, (Nat$MAGER >= 30) & (Nat$MBSTATE_REC == "US Born" | Nat$MBSTATE_REC == "Outside of US Born") & (Nat$MRACE15 == "Asian Indian" | Nat$MRACE15 == "Chinese" | Nat$MRACE15 == "Filipino" | Nat$MRACE15 == "Japanese" | Nat$MRACE15 == "Korean" | Nat$MRACE15 == "Vietnamese"))) +
+  coord_flip() +
+  geom_bar(mapping = aes(x = factor(MRACE15), y = (..count..)/sum(..count..), fill=factor(isOver40)), position = "dodge") +
+  facet_wrap( ~ factor(MBSTATE_REC)) +
+  scale_y_continuous(labels = scales::percent)
+```
 
 ![](https://uofi.box.com/shared/static/1b5n0frv30n5bf3un7pldmxtf6lvwi75.png)
 
 c. The image below uses the Chicago Food Inspections Data [link here](https://uofi.box.com/shared/static/5637axblfhajotail80yw7j2s4r27hxd.csv). Also, explain the image with Markdown syntax (do not include the explanation within the visualization).
+```{r}
+food$Inspection.Date <-as.character(food$Inspection.Date)
+
+```
+
+
 ```{r}
 ggplot(data = subset(food, food$Color == "red" & food$Inspection.Date >= "1/1/2015" & food$Inspection.Date <= "12/31/2016")) +
   geom_point(mapping = aes(x = Latitude, y = Longitude, color = Color)) +
@@ -206,12 +318,13 @@ d. The image below uses the Chicago Food Inspections Data. Also, explain the ima
 
 ```{r}
 
-
+food$Year = format(as.Date(food$Inspection.Date, format="%m/%d/%Y"),"%Y")
+food$Year = as.integer(food$Year)
 ```
 
 ```{r}
 ggplot(data = food, aes(x = food$Inspection.Date)) +
-  geom_density()
+  geom_line(y = 2010)
 ```
 
 ![](https://uofi.box.com/shared/static/19hgnx2otbpfk2i8kcnk9uthw4kirvux.png)
