@@ -66,9 +66,9 @@ library(maps)
 a. recreate your improved visualization in **problem 2a of HW04**
 
 ```{r}
-food <- read.csv("Food_Inspections.csv")
+food <- read.csv("Food_Inspections.csv") #reading CVS
 food$Color= "white"
-food$Color[food$Results == "Pass"] = "chartreuse2"
+food$Color[food$Results == "Pass"] = "chartreuse2" #assigning color based on result of test
 food$Color[food$Results == "Fail"] = "red"
 ```
 
@@ -82,7 +82,6 @@ ggplot(data = food) +
   ylim(c(-87.66, -87.6)) +
   xlim(c(41.879, 41.881)) 
 
-#####FOR NOW THE LEGEND WILL BE OFF, NEED TO RENAME VARS TO GET THEM TO DISPLAY STUFF
 ```
 
 
@@ -97,13 +96,12 @@ ggplot(data = subset(food, food$Facility.Type == "Restaurant" & food$Color != "w
   labs(color="Pass/Fail") +
   ylim(c(-87.66, -87.6)) +
   xlim(c(41.879, 41.881)) +
-  scale_alpha_manual(values = c(1, 0.1), guide = FALSE) +
+  scale_alpha_manual(values = c(1, 0.1), guide = FALSE)
   
 
 #changes made:
   #removed clutter by subsetting by restaurants because Gordon Ramsay's brother wants to visit restaurants
   #Removed white points
-  #
   
 ```
 Jordon Ramsay wants to find a positive and clean restaurant to show for his TV show. As you can see with this figure, I decided to change the alpha of those restaurants with a failing grade, making them less prevalent on the plot and easier for Jordon Ramsay to find better restaurants.
@@ -114,7 +112,7 @@ c. recreate your improved visualization in **problem 4a of HW04**
 loan <- read.csv("SBA.csv", stringsAsFactors = TRUE)
 ```
 ```{r}
-banks = loan[which((loan$Bank == "BUSEY BANK" | loan$Bank == "CENTRAL ILLINOIS BANK A BRANCH" | loan$Bank == "JPMORGAN CHASE BANK NATL ASSOC" | loan$Bank == "PNC BANK, NATIONAL ASSOCIATION" | loan$Bank == "SMALL BUS. GROWTH CORP") & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
+banks = loan[which((loan$Bank == "BUSEY BANK" | loan$Bank == "CENTRAL ILLINOIS BANK A BRANCH" | loan$Bank == "JPMORGAN CHASE BANK NATL ASSOC" | loan$Bank == "PNC BANK, NATIONAL ASSOCIATION" | loan$Bank == "SMALL BUS. GROWTH CORP") & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),] #subsetting data
 
 busey = loan[which(loan$Bank == "BUSEY BANK" & (loan$Zip == 61801 | loan$Zip == 61802 | loan$Zip == 61820 | loan$Zip == 61874)),]
 
@@ -144,7 +142,7 @@ busey$ApprovalFY = as.numeric(busey$ApprovalFY)
 central$DisbursementGross = as.numeric(central$DisbursementGross)
 central$ApprovalFY = as.numeric(central$ApprovalFY)
 
-banks$Color= "white"
+banks$Color= "white" #color coding
 banks$Color[banks$Bank == "BUSEY BANK"] = "darkblue"
 banks$Color[banks$Bank == "CENTRAL ILLINOIS BANK A BRANCH"] = "red"
 banks$Color[banks$Bank == "JPMORGAN CHASE BANK NATL ASSOC"] = "lightblue"
@@ -249,7 +247,7 @@ Nat$MBSTATE_REC <- ifelse(Nat$MBSTATE_REC =="3", "Unknown", Nat$MBSTATE_REC)
 
 ```{r}
 Nat$MCRACEnew = Nat$MRACE15
-Nat$MEDUC <- ifelse(Nat$MEDUC == "6", "Bachelors", Nat$MEDUC)
+Nat$MEDUC <- ifelse(Nat$MEDUC == "6", "Bachelors", Nat$MEDUC) #changing numeric values to strings
 Nat$MEDUC <- ifelse(Nat$MEDUC == "7", "Masters or Higher", Nat$MEDUC)
 Nat$MEDUC <- ifelse(Nat$MEDUC == "8", "Masters or Higher", Nat$MEDUC)
 
@@ -276,9 +274,9 @@ a. The image below uses the US Natlity Data. Also, explain the image with Markdo
 #Using the whole dataset literally crashes everything so im using the first parititon
 ggplot(data = subset(Nat, (Nat$MEDUC == "Bachelors" | Nat$MEDUC == "Masters or Higher") & (Nat$MBSTATE_REC == "US Born" | Nat$MBSTATE_REC == "Outside of US Born") & (Nat$MRACE15 == "Asian Indian" | Nat$MRACE15 == "Chinese" | Nat$MRACE15 == "Filipino" | Nat$MRACE15 == "Japanese" | Nat$MRACE15 == "Korean" | Nat$MRACE15 == "Vietnamese"))) +
   coord_flip() +
-  geom_bar(mapping = aes(x = factor(MRACE15), y = (..count..)/sum(..count..), fill=factor(MEDUC)), position = "dodge") +
+  geom_bar(mapping = aes(x = factor(MRACE15), y = 100 * (..count..)/sum(..count..), fill=factor(MEDUC)), position = "dodge") +
   facet_wrap( ~ factor(MBSTATE_REC)) +
-  scale_y_continuous(labels = scales::percent)
+  ylab("Percent") + xlab("Race") + ggtitle("Percentage of Asian Women with at least a Bachelors degree")
 ```
 I decided to switch a few things compared to the original image. For 1, I decided to compare the bars side by side instead of stacked on each other. I think the stacked format lessens the readability of a barchart. Secondly, I decided to split the bar graphs into 2 different bar graphs with a more clear divider between US born and Not US born. I think this is better than the original format since its easier to compare the results between US born Asian Mothers and Non-US Born Asian Mothers.
 
@@ -287,7 +285,7 @@ I decided to switch a few things compared to the original image. For 1, I decide
 
 b. The image below uses the US Natlity Data. Also, explain the image with Markdown syntax (do not include the explanation within the visualization).
 ```{r}
-Nat$isOver40 <- ifelse(Nat$MAGER >= 40, "40 and Over", "30 through 39")
+Nat$isOver40 <- ifelse(Nat$MAGER >= 40, "40 and Over", "30 through 39") #over40 variable.
 ```
 
 
@@ -297,7 +295,8 @@ ggplot(data = subset(Nat, (Nat$MAGER >= 30) & (Nat$MBSTATE_REC == "US Born" | Na
   coord_flip() +
   geom_bar(mapping = aes(x = factor(MRACE15), y = (..count..)/sum(..count..), fill=factor(isOver40)), position = "dodge") +
   facet_wrap( ~ factor(MBSTATE_REC)) +
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent) +
+  ylab("Percent") + xlab("Race") + ggtitle("Percentage of Asian Women 30-39 vs 40 and over")
 ```
 I took a similar approach to this bar graph as I did with the previous one. This image is a bar graph comparing the percentage of Asian Mothers over 30 and under 40 with those who are over 40. While stacking the barplot does not look as confusing as the previous graph, I think doing a side-by-side is still more clear. Additionally, I split the bar graph into two parts, US Born and Non-US Born.
 
@@ -336,8 +335,7 @@ food$Year = as.integer(food$Year)
 ```
 
 ```{r}
-ggplot(data = food, aes(x = food$Inspection.Date)) +
-  geom_line(y = 2010)
+ggplot(data = food, aes(x = food$Inspection.Date)) 
 ```
 
 ![](https://uofi.box.com/shared/static/19hgnx2otbpfk2i8kcnk9uthw4kirvux.png)
@@ -493,13 +491,46 @@ while(score > 13){
 
 b. Write a function which runs the two line searches in part **a** for the jth generated predictor value.
 ```{r}
+line_1 <- function()
+{
+  yupr <- yupr + 0.01
+  score <- density_score(ynew = yupr, xnew = xnew)
+}
+
+
+line_2 <- function()
+{
+  ylwr <- ylwr - 0.01
+  score <- density_score(ynew = ylwr, xnew = xnew)
+}
 
 ```
 
 c. Use parallel programming to run the function you wrote in part **b**.  Save the output and record the time that it took to perform these calculations  *NOTE: It is not advised to use `detectCores` as an argument in defining the number of workers you want. It's much better to specify the number of workers explicitly.*
+```{r}
+ line_1_time <- system.time({
+   mclapply(13, line_1, mc.cores = 1)
+ })
+
+ lime_2_time <- system.time({
+   mclapply(13, line_2, mc.cores = 1)
+ })
+```
+
 
 d. Redo the calculation in part **c** using ``lapply`` and record the time it took to run this job. Which method is faster?
+```{r}
+l_time <- system.time({
+  lapply(13, line_1)
+})
+
+l_time_2 <- system.time({
+  lapply(13, line_2)
+})
+```
+
 
 e. Using **ggplot**, plot the original data and depict lines of the lower and upper boundaries that you computed from part **c**. 
+
 
 
