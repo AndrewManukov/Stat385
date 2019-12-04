@@ -40,21 +40,22 @@ As mentioned in the syllabus, the Instructor will give a grade for the presentat
 - group members' names
   -Andro Manukov, Hermes Pazos, Mallory Root, David Alegre, Jamie Kenna
 - tentative title of the project
-  -Chicago Food Inspections (old)
   -Chicago Area Restaurants Near Me! (new)
 - the dataset
   -Chicago Food Inspections
+    -Variables:
+      DBA NAME,
+      Facility Type,
+      Risk,
+      Results,
+      Latitude,
+      Longitude
 - summary of the intentions and goals of the project
-  -Observe risk and result (pass/fail) of food areas in chicago. (old)
-  -Taking user inputted address and find Restaurants sorted by nearest to that address. Output as an interactive plot and/or datatable.
+  Observe risk and result (pass/fail) of food areas in chicago,
+  Taking user inputted address and find Restaurants sorted by nearest to that address. Output as an interactive plot and/or datatable,
+  Allow user to filter results based on risk tolerance (?)
 - storyboard
-  -Issue: People dont really know where the safest/best restaurants to eat at
-  -Demonstrate Issue: Show how difficult it is to diffirentiate between restaurants in the chicago area
-  -Ideas for overcomming issue: Create an easy way to visualize/interpret user chosen restaurants
-  -Description of 
-  -Solution: Have the ability to seperate the food areas based on risk and 
+  ![StoryBoad!](IMG_1726.JPG)
 
 
 
-
-![Source: C. Knaflic "Storytelling with Data" Fig .1.2](https://uofi.box.com/shared/static/27nlhwqte7b688vqrb0y8ewgz4wqbaop.png)
