@@ -55,7 +55,7 @@ As mentioned in the syllabus, the Instructor will give a grade for the presentat
   Taking user inputted address and find Restaurants sorted by nearest to that address. Output as an interactive plot and/or datatable,
   Allow user to filter results based on risk tolerance (?)
 - storyboard
-  ![StoryBoad!](IMG_1726.JPG)
+  ![StoryBoard!](IMG_1726.JPG)
 
 
 
