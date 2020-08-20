@@ -1,0 +1,191 @@
+---
+title: "New"
+author: "Andro Manukov"
+date: "August 18, 2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(shiny)
+library(ggplot2)
+library(dplyr)
+#library(geosphere) used for distance function but decided to remove
+library(httr)
+library(rjson)
+library(plyr) #some function that isnt in dplyr 
+library(ggmap)
+library(ggiraph)
+```
+
+Dataset:
+
+```{r Import Dataset}
+Food <- read_csv("Food_Inspections.csv") #Had to download file and then read it. Dropbox link was set up weird.
+head(Food)
+```
+
+
+```{r Removing columns that wont be needed}
+Food = subset(Food, select = c("DBA Name", "Address", "Facility Type", "Risk", "Results", "Latitude", "Longitude"))
+head(Food)
+```
+
+```{r Converting facility type listings to a more uniform standard}
+Food$`Facility Type` <- gsub(pattern = "Bakery", replacement = "Bakery", x = Food$`Facility Type`, ignore.case = TRUE) #Takes long to run 
+Food$`Facility Type` <- gsub(pattern = "Bar", replacement = "Bar", x = Food$`Facility Type`, ignore.case = TRUE)
+Food$`Facility Type` <- gsub(pattern = "Restaurant", replacement = "Restaurant", x = Food$`Facility Type`, ignore.case = TRUE)
+Food$`Facility Type` <- gsub(pattern = "Banquet", replacement = "Banquet", x = Food$`Facility Type`, ignore.case = TRUE)
+Food$`Facility Type` <- gsub(pattern = "Pantry", replacement = "Pantry", x = Food$`Facility Type`, ignore.case = TRUE)
+#gsub command is similar to the grep command except with replacement 
+#also going to convert "pass with conditions to just pass"
+Food$Results <- gsub(pattern = "Pass w/ Conditions", replacement = "Pass", x = Food$Results, ignore.case = TRUE)
+```
+
+```{r Need to remove non-eatery areas}
+Food <- subset(Food, `Facility Type` == "Restaurant" | `Facility Type` == "Bakery" | `Facility Type` == "Bar" | `Facility Type` == "Banquet" | `Facility Type` == "Ice Cream" | `Facility Type` == "Pantry")
+```
+
+```{r Removing Duplicates}
+Food <- Food[!duplicated(Food), ]
+```
+
+
+```{r}
+unique(Food$`Facility Type`) #Double check that everything is right
+```
+
+```{r App}
+ui <- fluidPage(
+    titlePanel("Chicago Area Food"),
+    sidebarLayout(
+        sidebarPanel(
+            textInput("addressInput", "Address", "225 N Columbus Dr, Chicago, IL"),
+            radioButtons("milesInput", "Distance",
+                               choices = c("Close", "Medium", "Far"),
+                               selected = "Close"),
+            radioButtons("facilityType", "Type of Establishment",
+                               choices = c("Restaurant", "Bar", "Bakery", "Banquet", "Pantry"),
+                               selected = "Restaurant"),
+            radioButtons("riskInput", "Risk Level",
+                               choices = c("Risk 3 (Low)", "Risk 2 (Medium)", "Risk 1 (High)"),
+                               selected = "Risk 3 (Low)"),
+            radioButtons("resultInput", "Result", choices = c("Pass", "Fail"), selected = "Pass")
+            
+            
+        ),
+        mainPanel(
+            girafeOutput("newplot"),
+            br(), br(),
+            tableOutput("results")
+           
+        )
+    )
+)
+
+server <- function(input, output) {
+    
+    #TEMP SOLUTION!!!! NEED TO REMOVE THIS EVENTUALLY 
+    filtered <- reactive({
+        if (is.null(input$facilityType)) {
+            return(NULL)
+        }
+      
+        data <- paste0("[",paste(paste0("\"",input$addressInput,"\""),collapse=","),"]")
+        url  <- "http://www.datasciencetoolkit.org/street2coordinates"
+        response <- POST(url,body=data)
+        json     <- fromJSON(content(response,type="text"))
+        location <- c(json[[1]][[2]], json[[1]][[4]]) #lat lon
+        
+        #Creating Binding Box for map
+        binding_box_multiplier = ifelse(input$milesInput == "Close", .0025, ifelse(input$milesInput == "Medium", .005, .0075)) #ifelse chain. 
+        user_bb <- c(
+            left = location[2] - binding_box_multiplier,
+            bottom = location[1] - binding_box_multiplier,
+            right = location[2] + binding_box_multiplier,
+            top = location[1] + binding_box_multiplier
+        ) #user binding box
+        
+    #TEMP SOLUTION!!!! NEED TO REMOVE THIS EVENTUALLY 
+    #ggmap doesn't like the "filtered()" command. No idea why. 
+        
+        
+        Food %>%
+            filter(Risk == input$riskInput,
+                   `Facility Type` == input$facilityType,
+                   Results == input$resultInput,
+                   Longitude >= user_bb[1],
+                   Longitude <= user_bb[3],
+                   Latitude >= user_bb[2],
+                   Latitude <= user_bb[4]
+            )
+        
+    })
+
+    
+
+    output$newplot <- renderGirafe({
+      
+        #Getting user's location
+        data <- paste0("[",paste(paste0("\"",input$addressInput,"\""),collapse=","),"]")
+        url  <- "http://www.datasciencetoolkit.org/street2coordinates"
+        response <- POST(url,body=data)
+        json     <- fromJSON(content(response,type="text"))
+        location <- c(json[[1]][[2]], json[[1]][[4]]) #lat lon
+        
+        #Creating Binding Box for map
+        binding_box_multiplier = ifelse(input$milesInput == "Close", .0025, ifelse(input$milesInput == "Medium", .005, .0075)) #ifelse chain. 
+        user_bb <- c(
+            left = location[2] - binding_box_multiplier,
+            bottom = location[1] - binding_box_multiplier,
+            right = location[2] + binding_box_multiplier,
+            top = location[1] + binding_box_multiplier
+        ) #user binding box
+        
+        
+        user_loc <- get_stamenmap(bbox = user_bb,
+                                zoom = 16)
+      
+        map <- ggmap(user_loc) + 
+            #geom_point(aes(x = Longitude, y = Latitude), position = "dodge", data = filtered(), alpha = .5, color= "black", size = 3) +
+            geom_point_interactive(aes(x = Longitude, y = Latitude, tooltip = `DBA Name`), data = filtered(), size = 3) +  
+            geom_point(aes(x = location[2], y = location[1]), alpha = .75, color = "red", size = 5) +
+            xlab("Longitude") + ylab("Latitude") +
+            ggtitle("Restaurants Near Me")
+            
+        girafe(code = print(map))    
+      
+    })
+    
+    output$results <- renderTable({
+        filtered()
+    })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+1901 W Madison St, Chicago, IL 60612
+107 E springfield Ave, Champaign, IL, 61820
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
